@@ -1,8 +1,16 @@
 import warnings
-import mumps._dmumps
+sys.path.append('/usr/local/lib/python3.4/dist-packages/mumps')
+
+import _dmumps
+import _smumps
+import _zmumps
+import _cmumps
 
 __all__ = [
     'DMumpsContext',
+    'SMumpsContext',
+    'ZMumpsContext',
+    'CMumpsContext',
     'spsolve',
     ]
 
@@ -231,10 +239,24 @@ class _MumpsBaseContext(object):
         self.mumps()
 
 class DMumpsContext(_MumpsBaseContext):
-
     cast_array = staticmethod(_dmumps.cast_array)
     _mumps_c = staticmethod(_dmumps.dmumps_c)
     _MUMPS_STRUC_C = staticmethod(_dmumps.DMUMPS_STRUC_C)
+
+class SMumpsContext(_MumpsBaseContext):
+    cast_array = staticmethod(_smumps.cast_array)
+    _mumps_c = staticmethod(_smumps.smumps_c)
+    _MUMPS_STRUC_C = staticmethod(_smumps.SMUMPS_STRUC_C)
+
+class ZMumpsContext(_MumpsBaseContext):
+    cast_array = staticmethod(_zmumps.cast_array)
+    _mumps_c = staticmethod(_zmumps.zmumps_c)
+    _MUMPS_STRUC_C = staticmethod(_zmumps.ZMUMPS_STRUC_C)
+
+class CMumpsContext(_MumpsBaseContext):
+    cast_array = staticmethod(_cmumps.cast_array)
+    _mumps_c = staticmethod(_cmumps.cmumps_c)
+    _MUMPS_STRUC_C = staticmethod(_cmumps.CMUMPS_STRUC_C)
 
 
 ########################################################################
@@ -244,19 +266,69 @@ class DMumpsContext(_MumpsBaseContext):
 def spsolve(A, b, comm=None):
     """Sparse solve A\b."""
 
-    assert A.dtype == 'd' and b.dtype == 'd', "Only double precision supported."
-    with DMumpsContext(par=1, sym=0, comm=comm) as ctx:
-        if ctx.myid == 0:
-            # Set the sparse matrix -- only necessary on
-            ctx.set_centralized_sparse(A.tocoo())
-            x = b.copy()
-            ctx.set_rhs(x)
+    if A.dtype == 'd' and b.dtype == 'd':
+        with DMumpsContext(par=1, sym=0, comm=comm) as ctx:
+            if ctx.myid == 0:
+                # Set the sparse matrix -- only necessary on
+                ctx.set_centralized_sparse(A.tocoo())
+                x = b.copy()
+                ctx.set_rhs(x)
 
-        # Silence most messages
-        ctx.set_silent()
+            # Silence most messages
+            ctx.set_silent()
 
-        # Analysis + Factorization + Solve
-        ctx.run(job=6)
+            # Analysis + Factorization + Solve
+            ctx.run(job=6)
 
-        if ctx.myid == 0:
-            return x
+            if ctx.myid == 0:
+                return x
+    elif A.dtype == 'f' and b.dtype == 'f':
+        with SMumpsContext(par=1, sym=0, comm=comm) as ctx:
+            if ctx.myid == 0:
+                # Set the sparse matrix -- only necessary on
+                ctx.set_centralized_sparse(A.tocoo())
+                x = b.copy()
+                ctx.set_rhs(x)
+
+            # Silence most messages
+            ctx.set_silent()
+
+            # Analysis + Factorization + Solve
+            ctx.run(job=6)
+
+            if ctx.myid == 0:
+                return x
+    elif A.dtype == 'c16' and b.dtype == 'c16':
+        with ZMumpsContext(par=1, sym=0, comm=comm) as ctx:
+            if ctx.myid == 0:
+                # Set the sparse matrix -- only necessary on
+                ctx.set_centralized_sparse(A.tocoo())
+                x = b.copy()
+                ctx.set_rhs(x)
+
+            # Silence most messages
+            ctx.set_silent()
+
+            # Analysis + Factorization + Solve
+            ctx.run(job=6)
+
+            if ctx.myid == 0:
+                return x
+    elif A.dtype == 'c8' and b.dtype == 'c8':
+        with CMumpsContext(par=1, sym=0, comm=comm) as ctx:
+            if ctx.myid == 0:
+                # Set the sparse matrix -- only necessary on
+                ctx.set_centralized_sparse(A.tocoo())
+                x = b.copy()
+                ctx.set_rhs(x)
+
+            # Silence most messages
+            ctx.set_silent()
+
+            # Analysis + Factorization + Solve
+            ctx.run(job=6)
+
+            if ctx.myid == 0:
+                return x
+    else :
+        assert False, "Format not supported."
