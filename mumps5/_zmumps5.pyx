@@ -1,28 +1,37 @@
-__all__ = ['DMUMPS_STRUC_C', 'dmumps_c', 'cast_array']
+__all__ = ['DMUMPS_STRUC_C', 'zmumps5_c', 'cast_array']
 
 ########################################################################
-# libdmumps / dmumps_c.h wrappers (using Cython)
+# libzmumps / zmumps5_c.h wrappers (using Cython)
 ########################################################################
-
+ 
 MUMPS_INT_DTYPE = 'i'
-DMUMPS_REAL_DTYPE = 'd'
-DMUMPS_COMPLEX_DTYPE = 'd'
+ZMUMPS_REAL_DTYPE = 'd'
+ZMUMPS_COMPLEX_DTYPE = 'z'
 
 from libc.string cimport strncpy
 
-cdef extern from "dmumps_c.h":
+cdef extern from "zmumps5_c.h":
 
     ctypedef int MUMPS_INT
-    ctypedef double DMUMPS_COMPLEX
-    ctypedef double DMUMPS_REAL
+    ctypedef long MUMPS_INT8
 
+    ctypedef struct mumps_double_complex:
+        double r
+        double i
+
+    ctypedef mumps_double_complex ZMUMPS_COMPLEX
+    ctypedef double ZMUMPS_REAL
+    
     char* MUMPS_VERSION
 
-    ctypedef struct c_DMUMPS_STRUC_C "DMUMPS_STRUC_C":
+    ctypedef struct c_ZMUMPS_STRUC_C "ZMUMPS_STRUC_C":
         MUMPS_INT      sym, par, job
         MUMPS_INT      comm_fortran    # Fortran communicator
         MUMPS_INT      icntl[40]
-        DMUMPS_REAL    cntl[15]
+        MUMPS_INT      keep[500]
+        ZMUMPS_REAL    cntl[15]
+        ZMUMPS_REAL    dkeep[230]
+        MUMPS_INT8     keep8[150]
         MUMPS_INT      n
 
         # used in matlab interface to decide if we
@@ -31,21 +40,23 @@ cdef extern from "dmumps_c.h":
 
         # Assembled entry
         MUMPS_INT      nz
+        MUMPS_INT8     nnz
         MUMPS_INT      *irn
         MUMPS_INT      *jcn
-        DMUMPS_COMPLEX *a
+        ZMUMPS_COMPLEX *a
 
         # Distributed entry
         MUMPS_INT      nz_loc
+        MUMPS_INT8     nnz_loc
         MUMPS_INT      *irn_loc
         MUMPS_INT      *jcn_loc
-        DMUMPS_COMPLEX *a_loc
+        ZMUMPS_COMPLEX *a_loc
 
         # Element entry
         MUMPS_INT      nelt
         MUMPS_INT      *eltptr
         MUMPS_INT      *eltvar
-        DMUMPS_COMPLEX *a_elt
+        ZMUMPS_COMPLEX *a_elt
 
         # Ordering, if given by user
         MUMPS_INT      *perm_in
@@ -55,17 +66,35 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      *uns_perm    # column permutation
 
         # Scaling (input only in this version)
-        DMUMPS_REAL    *colsca
-        DMUMPS_REAL    *rowsca
+        ZMUMPS_REAL    *colsca
+        ZMUMPS_REAL    *rowsca
+        MUMPS_INT      colsca_from_mumps
+        MUMPS_INT      rowsca_from_mumps
 
         # RHS, solution, ouptput data and statistics
-        DMUMPS_COMPLEX *rhs, *redrhs, *rhs_sparse, *sol_loc
-        MUMPS_INT      *irhs_sparse, *irhs_ptr, *isol_loc
-        MUMPS_INT      nrhs, lrhs, lredrhs, nz_rhs, lsol_loc
-        MUMPS_INT      schur_mloc, schur_nloc, schur_lld
-        MUMPS_INT      mblock, nblock, nprow, npcol
-        MUMPS_INT      info[40],infog[40]
-        DMUMPS_REAL    rinfo[20], rinfog[20]
+        ZMUMPS_COMPLEX *rhs
+        ZMUMPS_COMPLEX *redrhs
+        ZMUMPS_COMPLEX *rhs_sparse
+        ZMUMPS_COMPLEX *sol_loc
+        MUMPS_INT      *irhs_sparse
+        MUMPS_INT      *irhs_ptr
+        MUMPS_INT      *isol_loc
+        MUMPS_INT      nrhs
+        MUMPS_INT      lrhs
+        MUMPS_INT      lredrhs
+        MUMPS_INT      nz_rhs
+        MUMPS_INT      lsol_loc
+        MUMPS_INT      schur_mloc
+        MUMPS_INT      schur_nloc
+        MUMPS_INT      schur_lld
+        MUMPS_INT      mblock
+        MUMPS_INT      nblock
+        MUMPS_INT      nprow
+        MUMPS_INT      npcol
+        MUMPS_INT      info[40]
+        MUMPS_INT      infog[40]
+        ZMUMPS_REAL    rinfo[40]
+        ZMUMPS_REAL    rinfog[40]
 
         # Null space
         MUMPS_INT      deficiency
@@ -75,11 +104,11 @@ cdef extern from "dmumps_c.h":
         # Schur
         MUMPS_INT      size_schur
         MUMPS_INT      *listvar_schur
-        DMUMPS_COMPLEX *schur
+        ZMUMPS_COMPLEX *schur
 
         # Internal parameters
         MUMPS_INT      instance_number
-        DMUMPS_COMPLEX *wk_user
+        ZMUMPS_COMPLEX *wk_user
 
         char *version_number
         # For out-of-core
@@ -88,10 +117,10 @@ cdef extern from "dmumps_c.h":
         # To save the matrix in matrix market format
         char *write_problem
         MUMPS_INT      lwk_user
-    void c_dmumps_c "dmumps_c" (c_DMUMPS_STRUC_C *)
+    void c_zmumps5_c "zmumps_c" (c_ZMUMPS_STRUC_C *) nogil
 
-cdef class DMUMPS_STRUC_C:
-    cdef c_DMUMPS_STRUC_C ob
+cdef class ZMUMPS_STRUC_C:
+    cdef c_ZMUMPS_STRUC_C ob
 
     property sym:
         def __get__(self): return self.ob.sym
@@ -113,7 +142,7 @@ cdef class DMUMPS_STRUC_C:
             return view
     property cntl:
         def __get__(self):
-            cdef DMUMPS_REAL[:] view = self.ob.cntl
+            cdef ZMUMPS_REAL[:] view = self.ob.cntl
             return view
 
     property n:
@@ -134,7 +163,7 @@ cdef class DMUMPS_STRUC_C:
         def __set__(self, long value): self.ob.jcn = <MUMPS_INT*> value
     property a:
         def __get__(self): return <long> self.ob.a
-        def __set__(self, long value): self.ob.a = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.a = <ZMUMPS_COMPLEX*> value
 
     property nz_loc:
         def __get__(self): return self.ob.nz_loc
@@ -147,7 +176,7 @@ cdef class DMUMPS_STRUC_C:
         def __set__(self, long value): self.ob.jcn_loc = <MUMPS_INT*> value
     property a_loc:
         def __get__(self): return <long> self.ob.a_loc
-        def __set__(self, long value): self.ob.a_loc = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.a_loc = <ZMUMPS_COMPLEX*> value
 
     property nelt:
         def __get__(self): return self.ob.nelt
@@ -160,7 +189,7 @@ cdef class DMUMPS_STRUC_C:
         def __set__(self, long value): self.ob.eltvar = <MUMPS_INT*> value
     property a_elt:
         def __get__(self): return <long> self.ob.a_elt
-        def __set__(self, long value): self.ob.a_elt = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.a_elt = <ZMUMPS_COMPLEX*> value
 
     property perm_in:
         def __get__(self): return <long> self.ob.perm_in
@@ -175,23 +204,23 @@ cdef class DMUMPS_STRUC_C:
 
     property colsca:
         def __get__(self): return <long> self.ob.colsca
-        def __set__(self, long value): self.ob.colsca = <DMUMPS_REAL*> value
+        def __set__(self, long value): self.ob.colsca = <ZMUMPS_REAL*> value
     property rowsca:
         def __get__(self): return <long> self.ob.rowsca
-        def __set__(self, long value): self.ob.rowsca = <DMUMPS_REAL*> value
+        def __set__(self, long value): self.ob.rowsca = <ZMUMPS_REAL*> value
 
     property rhs:
         def __get__(self): return <long> self.ob.rhs
-        def __set__(self, long value): self.ob.rhs = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.rhs = <ZMUMPS_COMPLEX*> value
     property redrhs:
         def __get__(self): return <long> self.ob.redrhs
-        def __set__(self, long value): self.ob.redrhs = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.redrhs = <ZMUMPS_COMPLEX*> value
     property rhs_sparse:
         def __get__(self): return <long> self.ob.rhs_sparse
-        def __set__(self, long value): self.ob.rhs_sparse = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.rhs_sparse = <ZMUMPS_COMPLEX*> value
     property sol_loc:
         def __get__(self): return <long> self.ob.sol_loc
-        def __set__(self, long value): self.ob.sol_loc = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.sol_loc = <ZMUMPS_COMPLEX*> value
 
 
     property irhs_sparse:
@@ -255,11 +284,11 @@ cdef class DMUMPS_STRUC_C:
 
     property rinfo:
         def __get__(self):
-            cdef DMUMPS_REAL[:] view = self.ob.rinfo
+            cdef ZMUMPS_REAL[:] view = self.ob.rinfo
             return view
     property rinfog:
         def __get__(self):
-            cdef DMUMPS_REAL[:] view = self.ob.rinfog
+            cdef ZMUMPS_REAL[:] view = self.ob.rinfog
             return view
 
     property deficiency:
@@ -280,14 +309,14 @@ cdef class DMUMPS_STRUC_C:
         def __set__(self, long value): self.ob.listvar_schur = <MUMPS_INT*> value
     property schur:
         def __get__(self): return <long> self.ob.schur
-        def __set__(self, long value): self.ob.schur = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.schur = <ZMUMPS_COMPLEX*> value
 
     property instance_number:
         def __get__(self): return self.ob.instance_number
         def __set__(self, value): self.ob.instance_number = value
     property wk_user:
         def __get__(self): return <long> self.ob.wk_user
-        def __set__(self, long value): self.ob.wk_user = <DMUMPS_COMPLEX*> value
+        def __set__(self, long value): self.ob.wk_user = <ZMUMPS_COMPLEX*> value
 
     property version_number:
         def __get__(self):
@@ -314,8 +343,9 @@ cdef class DMUMPS_STRUC_C:
         def __get__(self): return self.ob.lwk_user
         def __set__(self, value): self.ob.lwk_user = value
 
-def dmumps_c(DMUMPS_STRUC_C s not None):
-    c_dmumps_c(&s.ob)
+def zmumps5_c(ZMUMPS_STRUC_C s not None):
+    with nogil:
+        c_zmumps5_c(&s.ob)
 
 __version__ = (<bytes> MUMPS_VERSION).decode('ascii')
 
@@ -333,6 +363,8 @@ def cast_array(arr):
     if dtype == 'i':
         return arr.__array_interface__['data'][0]
     elif dtype == 'd':
+        return arr.__array_interface__['data'][0]
+    elif dtype == 'c16':
         return arr.__array_interface__['data'][0]
     else:
         raise ValueError("Unknown dtype %r" % dtype)

@@ -19,9 +19,9 @@ with open('README.md') as f:
 
 
 setup(
-    name='PyMUMPS',
+    name='PyMUMPS5',
     version='0.3.2',
-    description='Python bindings for MUMPS, a parallel sparse direct solver',
+    description='Python bindings for MUMPS5, a parallel sparse direct solver',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Bradley M. Froehle',
@@ -30,20 +30,30 @@ setup(
     maintainer_email='stephan.rave@uni-muenster.de',
     license='BSD',
     url='http://github.com/pymumps/pymumps',
-    packages=['mumps'],
+    packages=['mumps5'],
     ext_modules=[
         Extension(
-            'mumps._dmumps',
-            sources=['mumps/_dmumps.pyx'],
-            libraries=['dmumps'],
+            'mumps5._dmumps5',
+            sources=['mumps5/_dmumps5.pyx'],
+            libraries=['dmumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
         ),
         Extension(
-            'mumps._zmumps',
-            sources=['mumps/_zmumps.pyx'],
-            libraries=['zmumps'],
+            'mumps5._smumps5',
+            sources=['mumps5/_smumps5.pyx'],
+            libraries=['smumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
+        ),
+        Extension(
+            'mumps5._zmumps5',
+            sources=['mumps5/_zmumps5.pyx'],
+            libraries=['zmumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
+        ),
+        Extension(
+            'mumps5._cmumps5',
+            sources=['mumps5/_cmumps5.pyx'],
+            libraries=['cmumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
         ),
     ],
-    install_requires=['mpi4py'],
+    install_requires=[],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',

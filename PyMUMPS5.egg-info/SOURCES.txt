@@ -1,0 +1,15 @@
+COPYING
+MANIFEST.in
+README.md
+setup.cfg
+setup.py
+PyMUMPS5.egg-info/PKG-INFO
+PyMUMPS5.egg-info/SOURCES.txt
+PyMUMPS5.egg-info/dependency_links.txt
+PyMUMPS5.egg-info/top_level.txt
+examples/dsimpletest.py
+mumps5/__init__.py
+mumps5/_cmumps5.pyx
+mumps5/_dmumps5.pyx
+mumps5/_smumps5.pyx
+mumps5/_zmumps5.pyx
