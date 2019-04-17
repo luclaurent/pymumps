@@ -35,12 +35,12 @@ setup(
         Extension(
             'mumps._dmumps',
             sources=['mumps/_dmumps.pyx'],
-            libraries=['dmumps'],
+            libraries=['dmumps','mumps_common','pord','openblas','mpiseq'],
         ),
         Extension(
             'mumps._zmumps',
             sources=['mumps/_zmumps.pyx'],
-            libraries=['zmumps'],
+            libraries=['zmumps','mumps_common','pord','openblas','mpiseq'],
         ),
     ],
     install_requires=['mpi4py'],
