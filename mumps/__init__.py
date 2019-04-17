@@ -1,8 +1,14 @@
 import warnings
 import mumps._dmumps
+import mumps._smumps
+import mumps._zmumps
+import mumps._cmumps
 
 __all__ = [
     'DMumpsContext',
+    'SMumpsContext',
+    'ZMumpsContext',
+    'CMumpsContext',
     'spsolve',
     ]
 
@@ -236,6 +242,24 @@ class DMumpsContext(_MumpsBaseContext):
     _mumps_c = staticmethod(_dmumps.dmumps_c)
     _MUMPS_STRUC_C = staticmethod(_dmumps.DMUMPS_STRUC_C)
 
+class SMumpsContext(_MumpsBaseContext):
+
+    cast_array = staticmethod(_smumps.cast_array)
+    _mumps_c = staticmethod(_smumps.smumps_c)
+    _MUMPS_STRUC_C = staticmethod(_smumps.SMUMPS_STRUC_C)
+
+class ZMumpsContext(_MumpsBaseContext):
+
+    cast_array = staticmethod(_zmumps.cast_array)
+    _mumps_c = staticmethod(_zmumps.zmumps_c)
+    _MUMPS_STRUC_C = staticmethod(_zmumps.ZMUMPS_STRUC_C)
+
+class CMumpsContext(_MumpsBaseContext):
+
+    cast_array = staticmethod(_cmumps.cast_array)
+    _mumps_c = staticmethod(_cmumps.cmumps_c)
+    _MUMPS_STRUC_C = staticmethod(_cmumps.CMUMPS_STRUC_C)
+
 
 ########################################################################
 # Functions
@@ -260,3 +284,21 @@ def spsolve(A, b, comm=None):
 
         if ctx.myid == 0:
             return x
+    elif A.dtype == 'c16' and b.dtype == 'c16':
+        with ZMumpsContext(par=1, sym=0, comm=comm) as ctx:
+            if ctx.myid == 0:
+                # Set the sparse matrix -- only necessary on
+                ctx.set_centralized_sparse(A.tocoo())
+                x = b.copy()
+                ctx.set_rhs(x)
+
+            # Silence most messages
+            ctx.set_silent()
+
+            # Analysis + Factorization + Solve
+            ctx.run(job=6)
+
+            if ctx.myid == 0:
+                return x
+    else :
+        assert False, "Only double precision supported."
