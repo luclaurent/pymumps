@@ -9,7 +9,7 @@ The solution should be [ 1. 2. 3. 4. 5.].
 """
 
 import numpy as np
-import mumps5
+import mumps
 
 # Set up the test problem:
 n = 5
