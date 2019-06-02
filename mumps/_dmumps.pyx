@@ -1,7 +1,7 @@
-__all__ = ['DMUMPS_STRUC_C', 'dmumps5_c', 'cast_array']
+__all__ = ['DMUMPS_STRUC_C', 'dmumps_c', 'cast_array']
 
 ########################################################################
-# libdmumps / dmumps5_c.h wrappers (using Cython)
+# libdmumps / dmumps_c.h wrappers (using Cython)
 ########################################################################
  
 MUMPS_INT_DTYPE = 'i'
@@ -10,7 +10,7 @@ DMUMPS_COMPLEX_DTYPE = 'd'
 
 from libc.string cimport strncpy
 
-cdef extern from "dmumps5_c.h":
+cdef extern from "dmumps_c.h":
 
     ctypedef int MUMPS_INT
     ctypedef long MUMPS_INT8
@@ -112,7 +112,7 @@ cdef extern from "dmumps5_c.h":
         # To save the matrix in matrix market format
         char *write_problem
         MUMPS_INT      lwk_user
-    void c_dmumps5_c "dmumps_c" (c_DMUMPS_STRUC_C *) nogil
+    void c_dmumps_c "dmumps_c" (c_DMUMPS_STRUC_C *) nogil
 
 cdef class DMUMPS_STRUC_C:
     cdef c_DMUMPS_STRUC_C ob
@@ -338,9 +338,9 @@ cdef class DMUMPS_STRUC_C:
         def __get__(self): return self.ob.lwk_user
         def __set__(self, value): self.ob.lwk_user = value
 
-def dmumps5_c(DMUMPS_STRUC_C s not None):
+def dmumps_c(DMUMPS_STRUC_C s not None):
     with nogil:
-        c_dmumps5_c(&s.ob)
+        c_dmumps_c(&s.ob)
 
 __version__ = (<bytes> MUMPS_VERSION).decode('ascii')
 

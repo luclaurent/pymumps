@@ -1,5 +1,5 @@
 Metadata-Version: 2.1
-Name: PyMUMPS5
+Name: PyMUMPS
 Version: 0.3.2
 Summary: Python bindings for MUMPS, a parallel sparse direct solver
 Home-page: http://github.com/pymumps/pymumps
@@ -8,7 +8,7 @@ Author-email: brad.froehle@gmail.com
 Maintainer: Stephan Rave
 Maintainer-email: stephan.rave@uni-muenster.de
 License: BSD
-Description: PyMUMPS5: A parallel sparse direct solver
+Description: PyMUMPS: A parallel sparse direct solver
         ========================================
         
         Requirements
