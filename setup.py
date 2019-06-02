@@ -19,9 +19,9 @@ with open('README.md') as f:
 
 
 setup(
-    name='PyMUMPS5',
+    name='PyMUMPS',
     version='0.3.2',
-    description='Python bindings for MUMPS5, a parallel sparse direct solver',
+    description='Python bindings for MUMPS, a parallel sparse direct solver',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Bradley M. Froehle',
@@ -30,27 +30,27 @@ setup(
     maintainer_email='stephan.rave@uni-muenster.de',
     license='BSD',
     url='http://github.com/pymumps/pymumps',
-    packages=['mumps5'],
+    packages=['mumps'],
     ext_modules=[
         Extension(
-            'mumps5._dmumps5',
-            sources=['mumps5/_dmumps5.pyx'],
-            libraries=['dmumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
+            'mumps._dmumps',
+            sources=['mumps/_dmumps.pyx'],
+            libraries=['dmumps', 'mumps_common', 'pord', 'openblas', 'mpiseq'],
         ),
         Extension(
-            'mumps5._smumps5',
-            sources=['mumps5/_smumps5.pyx'],
-            libraries=['smumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
+            'mumps._smumps',
+            sources=['mumps/_smumps.pyx'],
+            libraries=['smumps', 'mumps_common', 'pord', 'openblas', 'mpiseq'],
         ),
         Extension(
-            'mumps5._zmumps5',
-            sources=['mumps5/_zmumps5.pyx'],
-            libraries=['zmumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
+            'mumps._zmumps',
+            sources=['mumps/_zmumps.pyx'],
+            libraries=['zmumps', 'mumps_common', 'pord', 'openblas', 'mpiseq'],
         ),
         Extension(
-            'mumps5._cmumps5',
-            sources=['mumps5/_cmumps5.pyx'],
-            libraries=['cmumps5', 'mumps_common5', 'pord5', 'openblas', 'mpiseq5'],
+            'mumps._cmumps',
+            sources=['mumps/_cmumps.pyx'],
+            libraries=['cmumps', 'mumps_common', 'pord', 'openblas', 'mpiseq'],
         ),
     ],
     install_requires=[],
