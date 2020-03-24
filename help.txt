@@ -1,3 +1,5 @@
 python setup.py config
 python setup.py build
 python setup.py install
+
+# possibly add: export MACOSX_DEPLOYMENT_TARGET=10.14
