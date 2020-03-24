@@ -1,0 +1,3 @@
+python setup.py config
+python setup.py build
+python setup.py install
