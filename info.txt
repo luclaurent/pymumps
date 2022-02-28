@@ -1,1 +1,0 @@
-install openblas in anaconda if necessary (conda install openblas)
