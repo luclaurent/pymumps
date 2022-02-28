@@ -20,7 +20,7 @@ with open('README.md') as f:
 
 setup(
     name='PyMUMPS',
-    version='0.3.2b',
+    version='0.3.2b-mod',
     description='Python bindings for MUMPS, a parallel sparse direct solver',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -53,7 +53,7 @@ setup(
             libraries=['cmumps','mumps_common','pord','openblas','mpiseq'],
         ),
     ],
-    install_requires=['mpi4py'],
+    install_requires=[],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',

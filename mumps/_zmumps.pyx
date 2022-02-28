@@ -1,13 +1,10 @@
-__all__ = ['DMUMPS_STRUC_C', 'dmumps_c', 'cast_array']
+__all__ = ['DMUMPS_STRUC_C', 'zmumps_c', 'cast_array']
 
 ########################################################################
-# libdmumps / dmumps_c.h wrappers (using Cython)
+# libzmumps / zmumps_c.h wrappers (using Cython)
 ########################################################################
-
+ 
 MUMPS_INT_DTYPE = 'i'
-DMUMPS_REAL_DTYPE = 'd'
-DMUMPS_COMPLEX_DTYPE = 'd'
-
 ZMUMPS_REAL_DTYPE = 'd'
 ZMUMPS_COMPLEX_DTYPE = 'z'
 
@@ -16,8 +13,7 @@ from libc.string cimport strncpy
 cdef extern from "zmumps_c.h":
 
     ctypedef int MUMPS_INT
-    ctypedef double DMUMPS_COMPLEX
-    ctypedef double DMUMPS_REAL
+    ctypedef long MUMPS_INT8
 
     ctypedef struct mumps_double_complex:
         double r
@@ -25,14 +21,17 @@ cdef extern from "zmumps_c.h":
 
     ctypedef mumps_double_complex ZMUMPS_COMPLEX
     ctypedef double ZMUMPS_REAL
-
+    
     char* MUMPS_VERSION
 
     ctypedef struct c_ZMUMPS_STRUC_C "ZMUMPS_STRUC_C":
         MUMPS_INT      sym, par, job
         MUMPS_INT      comm_fortran    # Fortran communicator
         MUMPS_INT      icntl[40]
+        MUMPS_INT      keep[500]
         ZMUMPS_REAL    cntl[15]
+        ZMUMPS_REAL    dkeep[230]
+        MUMPS_INT8     keep8[150]
         MUMPS_INT      n
 
         # used in matlab interface to decide if we
@@ -41,12 +40,14 @@ cdef extern from "zmumps_c.h":
 
         # Assembled entry
         MUMPS_INT      nz
+        MUMPS_INT8     nnz
         MUMPS_INT      *irn
         MUMPS_INT      *jcn
         ZMUMPS_COMPLEX *a
 
         # Distributed entry
         MUMPS_INT      nz_loc
+        MUMPS_INT8     nnz_loc
         MUMPS_INT      *irn_loc
         MUMPS_INT      *jcn_loc
         ZMUMPS_COMPLEX *a_loc
@@ -67,22 +68,33 @@ cdef extern from "zmumps_c.h":
         # Scaling (input only in this version)
         ZMUMPS_REAL    *colsca
         ZMUMPS_REAL    *rowsca
+        MUMPS_INT      colsca_from_mumps
+        MUMPS_INT      rowsca_from_mumps
 
         # RHS, solution, ouptput data and statistics
-        ZMUMPS_COMPLEX *rhs,
-        ZMUMPS_COMPLEX *redrhs,
-        ZMUMPS_COMPLEX *rhs_sparse,
+        ZMUMPS_COMPLEX *rhs
+        ZMUMPS_COMPLEX *redrhs
+        ZMUMPS_COMPLEX *rhs_sparse
         ZMUMPS_COMPLEX *sol_loc
-        MUMPS_INT      *irhs_sparse,
-        MUMPS_INT      *irhs_ptr,
+        MUMPS_INT      *irhs_sparse
+        MUMPS_INT      *irhs_ptr
         MUMPS_INT      *isol_loc
-        MUMPS_INT      nrhs, lrhs, lredrhs, nz_rhs, lsol_loc
-        MUMPS_INT      schur_mloc, schur_nloc, schur_lld
-        MUMPS_INT      mblock, nblock, nprow, npcol
-        MUMPS_INT      info[40],
+        MUMPS_INT      nrhs
+        MUMPS_INT      lrhs
+        MUMPS_INT      lredrhs
+        MUMPS_INT      nz_rhs
+        MUMPS_INT      lsol_loc
+        MUMPS_INT      schur_mloc
+        MUMPS_INT      schur_nloc
+        MUMPS_INT      schur_lld
+        MUMPS_INT      mblock
+        MUMPS_INT      nblock
+        MUMPS_INT      nprow
+        MUMPS_INT      npcol
+        MUMPS_INT      info[40]
         MUMPS_INT      infog[40]
-        ZMUMPS_REAL    rinfo[20],
-        ZMUMPS_REAL    rinfog[20]
+        ZMUMPS_REAL    rinfo[40]
+        ZMUMPS_REAL    rinfog[40]
 
         # Null space
         MUMPS_INT      deficiency
@@ -105,7 +117,7 @@ cdef extern from "zmumps_c.h":
         # To save the matrix in matrix market format
         char *write_problem
         MUMPS_INT      lwk_user
-    void c_zmumps_c "zmumps_c" (c_ZMUMPS_STRUC_C *)
+    void c_zmumps_c "zmumps_c" (c_ZMUMPS_STRUC_C *) nogil
 
 cdef class ZMUMPS_STRUC_C:
     cdef c_ZMUMPS_STRUC_C ob
@@ -332,7 +344,8 @@ cdef class ZMUMPS_STRUC_C:
         def __set__(self, value): self.ob.lwk_user = value
 
 def zmumps_c(ZMUMPS_STRUC_C s not None):
-    c_zmumps_c(&s.ob)
+    with nogil:
+        c_zmumps_c(&s.ob)
 
 __version__ = (<bytes> MUMPS_VERSION).decode('ascii')
 

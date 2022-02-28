@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 __all__ = ['DMUMPS_STRUC_C', 'cmumps_c', 'cast_array']
 
 ########################################################################
 # libcmumps / cmumps_c.h wrappers (using Cython)
+=======
+__all__ = ['DMUMPS_STRUC_C', 'zmumps_c', 'cast_array']
+
+########################################################################
+# libzmumps / zmumps_c.h wrappers (using Cython)
+>>>>>>> v5-spec-mac
 ########################################################################
  
 MUMPS_INT_DTYPE = 'i'

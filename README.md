@@ -1,5 +1,5 @@
-PyMUMPS: A parallel sparse direct solver
-========================================
+PyMUMPS5: A parallel sparse direct solver
+=========================================
 
 Requirements
 ------------
