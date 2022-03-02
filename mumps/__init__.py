@@ -4,7 +4,6 @@ import mumps._smumps
 import mumps._zmumps
 import mumps._cmumps
 
-
 __all__ = [
     'DMumpsContext',
     'SMumpsContext',
@@ -265,69 +264,19 @@ class CMumpsContext(_MumpsBaseContext):
 def spsolve(A, b, comm=None):
     """Sparse solve A\b."""
 
-    if A.dtype == 'd' and b.dtype == 'd':
-        with DMumpsContext(par=1, sym=0, comm=comm) as ctx:
-            if ctx.myid == 0:
-                # Set the sparse matrix -- only necessary on
-                ctx.set_centralized_sparse(A.tocoo())
-                x = b.copy()
-                ctx.set_rhs(x)
+    assert A.dtype == 'd' and b.dtype == 'd', "Only double precision supported."
+    with DMumpsContext(par=1, sym=0, comm=comm) as ctx:
+        if ctx.myid == 0:
+            # Set the sparse matrix -- only necessary on
+            ctx.set_centralized_sparse(A.tocoo())
+            x = b.copy()
+            ctx.set_rhs(x)
 
-            # Silence most messages
-            ctx.set_silent()
+        # Silence most messages
+        ctx.set_silent()
 
-            # Analysis + Factorization + Solve
-            ctx.run(job=6)
+        # Analysis + Factorization + Solve
+        ctx.run(job=6)
 
-            if ctx.myid == 0:
-                return x
-    elif A.dtype == 'f' and b.dtype == 'f':
-        with SMumpsContext(par=1, sym=0, comm=comm) as ctx:
-            if ctx.myid == 0:
-                # Set the sparse matrix -- only necessary on
-                ctx.set_centralized_sparse(A.tocoo())
-                x = b.copy()
-                ctx.set_rhs(x)
-
-            # Silence most messages
-            ctx.set_silent()
-
-            # Analysis + Factorization + Solve
-            ctx.run(job=6)
-
-            if ctx.myid == 0:
-                return x
-    elif A.dtype == 'c16' and b.dtype == 'c16':
-        with ZMumpsContext(par=1, sym=0, comm=comm) as ctx:
-            if ctx.myid == 0:
-                # Set the sparse matrix -- only necessary on
-                ctx.set_centralized_sparse(A.tocoo())
-                x = b.copy()
-                ctx.set_rhs(x)
-
-            # Silence most messages
-            ctx.set_silent()
-
-            # Analysis + Factorization + Solve
-            ctx.run(job=6)
-
-            if ctx.myid == 0:
-                return x
-    elif A.dtype == 'c8' and b.dtype == 'c8':
-        with CMumpsContext(par=1, sym=0, comm=comm) as ctx:
-            if ctx.myid == 0:
-                # Set the sparse matrix -- only necessary on
-                ctx.set_centralized_sparse(A.tocoo())
-                x = b.copy()
-                ctx.set_rhs(x)
-
-            # Silence most messages
-            ctx.set_silent()
-
-            # Analysis + Factorization + Solve
-            ctx.run(job=6)
-
-            if ctx.myid == 0:
-                return x
-    else :
-        assert False, "Format not supported."
+        if ctx.myid == 0:
+            return x

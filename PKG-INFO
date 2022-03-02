@@ -1,12 +1,12 @@
 Metadata-Version: 2.1
 Name: PyMUMPS
-Version: 0.3.2
+Version: 0.5.0
 Summary: Python bindings for MUMPS, a parallel sparse direct solver
 Home-page: http://github.com/pymumps/pymumps
 Author: Bradley M. Froehle
 Author-email: brad.froehle@gmail.com
-Maintainer: Stephan Rave
-Maintainer-email: stephan.rave@uni-muenster.de
+Maintainer: Olivier De Smet
+Maintainer-email: olivier.desmet@lecnam.net
 License: BSD
 Description: PyMUMPS: A parallel sparse direct solver
         ========================================
@@ -67,7 +67,6 @@ Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Science/Research
 Classifier: License :: OSI Approved :: BSD License
-Classifier: Programming Language :: Python :: 2
 Classifier: Programming Language :: Python :: 3
 Classifier: Topic :: Scientific/Engineering :: Mathematics
 Description-Content-Type: text/markdown

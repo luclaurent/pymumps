@@ -1,3 +1,5 @@
+#cython: language_level=3
+
 __all__ = ['DMUMPS_STRUC_C', 'dmumps_c', 'cast_array']
 
 ########################################################################
@@ -22,12 +24,13 @@ cdef extern from "dmumps_c.h":
     ctypedef struct c_DMUMPS_STRUC_C "DMUMPS_STRUC_C":
         MUMPS_INT      sym, par, job
         MUMPS_INT      comm_fortran    # Fortran communicator
-        MUMPS_INT      icntl[40]
+        MUMPS_INT      icntl[60]
         MUMPS_INT      keep[500]
         DMUMPS_REAL    cntl[15]
         DMUMPS_REAL    dkeep[230]
         MUMPS_INT8     keep8[150]
         MUMPS_INT      n
+        MUMPS_INT      nblk
 
         # used in matlab interface to decide if we
         # free + malloc when we have large variation
@@ -53,6 +56,10 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      *eltvar
         DMUMPS_COMPLEX *a_elt
 
+        # Matrix by blocks
+        MUMPS_INT      *blkptr
+        MUMPS_INT      *blkvar
+
         # Ordering, if given by user
         MUMPS_INT      *perm_in
 
@@ -71,14 +78,18 @@ cdef extern from "dmumps_c.h":
         DMUMPS_COMPLEX *redrhs
         DMUMPS_COMPLEX *rhs_sparse
         DMUMPS_COMPLEX *sol_loc
+        DMUMPS_COMPLEX *rhs_loc
         MUMPS_INT      *irhs_sparse
         MUMPS_INT      *irhs_ptr
         MUMPS_INT      *isol_loc
+        MUMPS_INT      *irhs_loc
         MUMPS_INT      nrhs
         MUMPS_INT      lrhs
         MUMPS_INT      lredrhs
         MUMPS_INT      nz_rhs
         MUMPS_INT      lsol_loc
+        MUMPS_INT      nloc_rhs
+        MUMPS_INT      lrhs_loc
         MUMPS_INT      schur_mloc
         MUMPS_INT      schur_nloc
         MUMPS_INT      schur_lld
@@ -86,8 +97,8 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      nblock
         MUMPS_INT      nprow
         MUMPS_INT      npcol
-        MUMPS_INT      info[40]
-        MUMPS_INT      infog[40]
+        MUMPS_INT      info[80]
+        MUMPS_INT      infog[80]
         DMUMPS_REAL    rinfo[40]
         DMUMPS_REAL    rinfog[40]
 
@@ -105,13 +116,20 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      instance_number
         DMUMPS_COMPLEX *wk_user
 
-        char *version_number
+        char           *version_number
         # For out-of-core
-        char *ooc_tmpdir
-        char *ooc_prefix
+        char           *ooc_tmpdir
+        char           *ooc_prefix
         # To save the matrix in matrix market format
-        char *write_problem
+        char           *write_problem
         MUMPS_INT      lwk_user
+        # For save/restore feature
+        char           *save_dir
+        char           *save_prefix
+
+        # Metis options
+        MUMPS_INT      metis_options[40]
+
     void c_dmumps_c "dmumps_c" (c_DMUMPS_STRUC_C *) nogil
 
 cdef class DMUMPS_STRUC_C:
@@ -143,6 +161,9 @@ cdef class DMUMPS_STRUC_C:
     property n:
         def __get__(self): return self.ob.n
         def __set__(self, value): self.ob.n = value
+    property nblk:
+        def __get__(self): return self.ob.nblk
+        def __set__(self, value): self.ob.nblk = value
     property nz_alloc:
         def __get__(self): return self.ob.nz_alloc
         def __set__(self, value): self.ob.nz_alloc = value
@@ -216,7 +237,9 @@ cdef class DMUMPS_STRUC_C:
     property sol_loc:
         def __get__(self): return <long> self.ob.sol_loc
         def __set__(self, long value): self.ob.sol_loc = <DMUMPS_COMPLEX*> value
-
+    property rhs_loc:
+        def __get__(self): return <long> self.ob.rhs_loc
+        def __set__(self, long value): self.ob.rhs_loc = <DMUMPS_COMPLEX*> value
 
     property irhs_sparse:
         def __get__(self): return <long> self.ob.irhs_sparse
@@ -227,6 +250,9 @@ cdef class DMUMPS_STRUC_C:
     property isol_loc:
         def __get__(self): return <long> self.ob.isol_loc
         def __set__(self, long value): self.ob.isol_loc = <MUMPS_INT*> value
+    property irhs_loc:
+        def __get__(self): return <long> self.ob.irhs_loc
+        def __set__(self, long value): self.ob.irhs_loc = <MUMPS_INT*> value
 
     property nrhs:
         def __get__(self): return self.ob.nrhs
@@ -243,6 +269,12 @@ cdef class DMUMPS_STRUC_C:
     property lsol_loc:
         def __get__(self): return self.ob.lsol_loc
         def __set__(self, value): self.ob.lsol_loc = value
+    property nloc_rhs:
+        def __get__(self): return self.ob.nloc_rhs
+        def __set__(self, value): self.ob.nloc_rhs = value
+    property lrhs_loc:
+        def __get__(self): return self.ob.lrhs_loc
+        def __set__(self, value): self.ob.lrhs_loc = value
 
     property schur_mloc:
         def __get__(self): return self.ob.schur_mloc
@@ -253,7 +285,6 @@ cdef class DMUMPS_STRUC_C:
     property schur_lld:
         def __get__(self): return self.ob.schur_lld
         def __set__(self, value): self.ob.schur_lld = value
-
 
     property mblock:
         def __get__(self): return self.ob.mblock
@@ -337,6 +368,22 @@ cdef class DMUMPS_STRUC_C:
     property lwk_user:
         def __get__(self): return self.ob.lwk_user
         def __set__(self, value): self.ob.lwk_user = value
+
+    property save_dir:
+        def __get__(self):
+            return (<bytes> self.ob.save_dir).decode('ascii')
+        def __set__(self, char *value):
+            strncpy(self.ob.save_dir, value, sizeof(self.ob.save_dir))
+    property save_prefix:
+        def __get__(self):
+            return (<bytes> self.ob.save_prefix).decode('ascii')
+        def __set__(self, char *value):
+            strncpy(self.ob.save_prefix, value, sizeof(self.ob.save_prefix))
+
+    property metis_options:
+        def __get__(self):
+            cdef MUMPS_INT[:] view = self.ob.metis_options
+            return view
 
 def dmumps_c(DMUMPS_STRUC_C s not None):
     with nogil:
