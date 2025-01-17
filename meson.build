@@ -1,6 +1,6 @@
 project('pymumps', 
 'cython',
-  version : run_command('src/_version.py', check: true).stdout().strip(),
+  version : '0.6.0', #run_command('src/_version.py', check: true).stdout().strip(),
 #   license: 'BSD-3',
   meson_version: '>=0.64.0',
   default_options : ['warning_level=2', 'buildtype=release']
@@ -34,7 +34,8 @@ message('Processing done: ')
 # Declare the sources for Python
 py.install_sources([
   'src/__init__.py',
-  'src/test_mumps.py'
+  'src/_version.py',
+  'src/tests/test_mumps.py'
   ],
   pure: false,
   preserve_path: false,
