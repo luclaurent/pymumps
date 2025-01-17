@@ -1,2 +1,109 @@
 [build-system]
-requires = ["setuptools", "wheel", "cython"]
+build-backend = "mesonpy"#"hatchling.build" #"mesonpy"
+requires = [
+    "hatch-meson",
+    "numpy",
+    "meson-python",
+    "cython"
+    ]
+
+[tool.meson-python.args]
+# setup = ['-Doption=false', '-Dfeature=enabled', '-Dvalue=42']
+compile = ['-j8']
+# install = ['--tags=bindings']
+# dist = ['--include-subprojects']
+
+[project]
+name = "PyMUMPS"
+authors = [
+    { name = "Bradley M. Froehle", email = "brad.froehle@gmail.com" }
+]
+maintainers = [
+    { name = "Olivier De Smet", email = "olivier.desmet@lecnam.net" },
+    { name = "Luc Laurent", email = "luc.laurent@lecnam.net" },
+]
+description = "Python bindings for MUMPS, a parallel sparse direct solver"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Fortran",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "numpy", 
+    "scipy", 
+]
+readme = "README.md"
+dynamic = ["version"]
+# version = "0.6.0"
+
+# [tool.setuptools.dynamic]
+# readme = { file = ["README.md"], content-type = "text/markdown" }
+
+[tool.hatch.version]
+path = "src/_version.py"
+
+[tool.hatch.build]
+# packages = ["SILEXlib"]
+only-packages = true
+ignore-vcs = false
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/"]
+
+[tool.hatch.build.hooks.meson]
+[tool.hatch.metadata.hooks.meson]
+
+[project.urls]
+repository = "https://github.com/luclaurent/pymumps"
+
+[project.optional-dependencies]
+dev = ["pylint ~=2.14.0", "toml ~=0.10.2", "yapf ~=0.32.0"]
+test = ["pytest", "pytest-cov[all]", "pytest-benchmark"]
+
+[tool.pytest.ini_options]
+addopts = "-n 10"
+testpaths = "src/tests"
+# addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 1"
+
+[tool.coverage.run]
+branch = true
+command_line = "-m unittest discover -s src/tests/"
+
+[tool.coverage.html]
+directory = "coverage_html_report"
+
+[tool.ruff]
+# Allow lines to be as long as 120.
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "single"
+
+# [tool.cibuildwheel]
+# test-requires = "pytest"
+# test-command = "python -m pytest --pyargs SILEXlib.tests"
+# manylinux-x86_64-image = "manylinux2014"
+
+# [tool.cibuildwheel.linux]
+# repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+
+# [[tool.cibuildwheel.overrides]]
+# select = "cp3{8,9,10,11}-*"
+
+
+# [tool.setuptools]
+# package-dir = {"" = "src"}
+
+# [tool.setuptools.dynamic]
+# version = {attr = "SILEX.__version__"}
+# readme = {file = ["README.md"]}
