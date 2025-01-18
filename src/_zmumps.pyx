@@ -100,12 +100,25 @@ cdef extern from "zmumps_c.h":
         MUMPS_INT      *irhs_loc
         MUMPS_INT      *glob2loc_rhs
         MUMPS_INT      *glob2loc_sol
-        MUMPS_INT      nrhs, lrhs, lredrhs, nz_rhs, lsol_loc, nloc_rhs, lrhs_loc, nsol_loc
-        MUMPS_INT      schur_mloc, schur_nloc, schur_lld
-        MUMPS_INT      mblock, nblock, nprow, npcol
-        MUMPS_INT      ld_rhsintr
-        MUMPS_INT      info[80],infog[80]
-        ZMUMPS_REAL    rinfo[40], rinfog[40]
+        MUMPS_INT      nrhs
+        MUMPS_INT      lrhs
+        MUMPS_INT      lredrhs
+        MUMPS_INT      nz_rhs
+        MUMPS_INT      lsol_loc
+        MUMPS_INT      nloc_rhs
+        MUMPS_INT      lrhs_loc
+        MUMPS_INT      nsol_loc
+        MUMPS_INT      schur_mloc
+        MUMPS_INT      schur_nloc
+        MUMPS_INT      schur_lld
+        MUMPS_INT      mblock
+        MUMPS_INT      nblock
+        MUMPS_INT      nprow
+        MUMPS_INT      npcol
+        MUMPS_INT      info[80]
+        MUMPS_INT      infog[80]
+        SMUMPS_REAL    rinfo[40]
+        SMUMPS_REAL    rinfog[40]
 
         ## Null space ##
         MUMPS_INT      deficiency
