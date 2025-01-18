@@ -117,8 +117,8 @@ cdef extern from "zmumps_c.h":
         MUMPS_INT      npcol
         MUMPS_INT      info[80]
         MUMPS_INT      infog[80]
-        SMUMPS_REAL    rinfo[40]
-        SMUMPS_REAL    rinfog[40]
+        ZMUMPS_REAL    rinfo[40]
+        ZMUMPS_REAL    rinfog[40]
 
         ## Null space ##
         MUMPS_INT      deficiency
