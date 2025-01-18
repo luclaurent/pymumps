@@ -137,7 +137,7 @@ cdef extern from "zmumps_c.h":
         MUMPS_INT metis_options[40]
 
         ## Internal parameters ##
-        MUMPS_INT      instance_number
+        MUMPS_INT instance_number
 
     void c_zmumps_c "zmumps_c" (c_ZMUMPS_STRUC_C *) nogil
 

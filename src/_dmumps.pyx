@@ -74,13 +74,13 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      rowsca_from_mumps
 
         # Distributed scaling(out) 
-        DMUMPS_REAL    *colsca_loc;
-        DMUMPS_REAL    *rowsca_loc;
+        DMUMPS_REAL    *colsca_loc
+        DMUMPS_REAL    *rowsca_loc
 
         # Info after facto 
-        MUMPS_INT      *rowind;
-        MUMPS_INT      *colind;
-        DMUMPS_COMPLEX *pivots;
+        MUMPS_INT      *rowind
+        MUMPS_INT      *colind
+        DMUMPS_COMPLEX *pivots
 
         # RHS, solution, ouptput data and statistics
         DMUMPS_COMPLEX *rhs
@@ -102,7 +102,7 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      lsol_loc
         MUMPS_INT      nloc_rhs
         MUMPS_INT      lrhs_loc
-        MUMPS_INT      nsol_loc;
+        MUMPS_INT      nsol_loc
         MUMPS_INT      schur_mloc
         MUMPS_INT      schur_nloc
         MUMPS_INT      schur_lld
@@ -119,7 +119,7 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      deficiency
         MUMPS_INT      *pivnul_list
         MUMPS_INT      *mapping
-        DMUMPS_REAL    *singular_values;
+        DMUMPS_REAL    *singular_values
 
         # Schur
         MUMPS_INT      size_schur
@@ -144,7 +144,7 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      metis_options[40]
 
         # Internal parameters 
-        MUMPS_INT      instance_number;
+        MUMPS_INT      instance_number
 
     void c_dmumps_c "dmumps_c" (c_DMUMPS_STRUC_C *) nogil
 

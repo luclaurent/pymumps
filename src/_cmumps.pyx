@@ -78,16 +78,28 @@ cdef extern from "cmumps_c.h":
         MUMPS_INT      colsca_from_mumps
         MUMPS_INT      rowsca_from_mumps
 
+        # Distributed scaling(out)
+        CMUMPS_REAL    *colsca_loc;
+        CMUMPS_REAL    *rowsca_loc;
+
+        # Info after facto 
+        MUMPS_INT      *rowind;
+        MUMPS_INT      *colind;
+        CMUMPS_COMPLEX *pivots;
+
         # RHS, solution, ouptput data and statistics
         CMUMPS_COMPLEX *rhs
         CMUMPS_COMPLEX *redrhs
         CMUMPS_COMPLEX *rhs_sparse
         CMUMPS_COMPLEX *sol_loc
         CMUMPS_COMPLEX *rhs_loc
+        CMUMPS_COMPLEX *rhsintr
         MUMPS_INT      *irhs_sparse
         MUMPS_INT      *irhs_ptr
         MUMPS_INT      *isol_loc
         MUMPS_INT      *irhs_loc
+        MUMPS_INT      *glob2loc_rhs
+        MUMPS_INT      *glob2loc_sol
         MUMPS_INT      nrhs
         MUMPS_INT      lrhs
         MUMPS_INT      lredrhs
@@ -95,6 +107,7 @@ cdef extern from "cmumps_c.h":
         MUMPS_INT      lsol_loc
         MUMPS_INT      nloc_rhs
         MUMPS_INT      lrhs_loc
+        MUMPS_INT      nsol_loc
         MUMPS_INT      schur_mloc
         MUMPS_INT      schur_nloc
         MUMPS_INT      schur_lld
@@ -111,6 +124,7 @@ cdef extern from "cmumps_c.h":
         MUMPS_INT      deficiency
         MUMPS_INT      *pivnul_list
         MUMPS_INT      *mapping
+        CMUMPS_REAL    *singular_values
 
         # Schur
         MUMPS_INT      size_schur
@@ -118,7 +132,6 @@ cdef extern from "cmumps_c.h":
         CMUMPS_COMPLEX *schur
 
         # Internal parameters
-        MUMPS_INT      instance_number
         CMUMPS_COMPLEX *wk_user
 
         char           *version_number
@@ -134,6 +147,9 @@ cdef extern from "cmumps_c.h":
 
         # Metis options
         MUMPS_INT      metis_options[40]
+
+        # Internal parameters
+        MUMPS_INT      instance_number
 
     void c_cmumps_c "cmumps_c" (c_CMUMPS_STRUC_C *) nogil
 

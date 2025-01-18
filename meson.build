@@ -16,40 +16,53 @@ message(datapy)
 py_dep = py.dependency()
 
 cc = meson.get_compiler('c')
-mumps_lib = []
-mumps_lib += cc.find_library('dmumps', required: false)
-mumps_lib += cc.find_library('mumps_common', required: false)
+mumps_lib_d = cc.find_library('dmumps', required: false)
+mumps_lib_s = cc.find_library('smumps', required: false)
+mumps_lib_z = cc.find_library('zmumps', required: false)
+mumps_lib_x = cc.find_library('cmumps', required: false)
+mumps_lib_common = cc.find_library('mumps_common', required: false)
 # message(zmumps.name())
 # message(zmumps.type_name())
 
 # Define the source files
-cython_sources = files('src/_dmumps.pyx')
-# cython_sources = files('src/_zmumps.pyx')
-# cython_sources = files('src/_zmumps.pyx')
-# cython_sources = files('src/_zmumps.pyx')
+cython_source_d = files('src/_dmumps.pyx')
+cython_source_s = files('src/_smumps.pyx')
+cython_source_z = files('src/_zmumps.pyx')
+cython_source_c = files('src/_cmumps.pyx')
 
-# Define the dependencies
-# zmumps = dependency('zmumps', required: false)
-# message(zmumps)
-# if not zmumps.found()
-# message('ZMUMPS not found')
-# zmumpslib = declare_dependency(
-# link_args : ['-L/usr/local/lib', '-lzmumps' ],
-# include_directories : include_directories('/usr/local/include')
-# )
-# endif
-
-# Assumes that f2py was run before in "name" module
+# 
 py.extension_module(
 '_dmumps', 
 cython_sources,
-dependencies : [py_dep, mumps_lib],
-# c_args:['-lzmumps'],
+dependencies : [py_dep, mumps_lib_d, mumps_lib_common],
 install: true,
-# link_with: zmumps,
-# dependencies: [zmumpslib],
-# link_language: 'fortran',
-# native: true,
+subdir: 'pymumps',  # Folder relative to site-packages to install to
+include_directories: ['src']
+)
+
+py.extension_module(
+'_smumps', 
+cython_sources,
+dependencies : [py_dep, mumps_lib_s, mumps_lib_common],
+install: true,
+subdir: 'pymumps',  # Folder relative to site-packages to install to
+include_directories: ['src']
+)
+
+py.extension_module(
+'_zmumps', 
+cython_sources,
+dependencies : [py_dep, mumps_lib_z, mumps_lib_common],
+install: true,
+subdir: 'pymumps',  # Folder relative to site-packages to install to
+include_directories: ['src']
+)
+
+py.extension_module(
+'_cmumps', 
+cython_sources,
+dependencies : [py_dep, mumps_lib_c, mumps_lib_common],
+install: true,
 subdir: 'pymumps',  # Folder relative to site-packages to install to
 include_directories: ['src']
 )
