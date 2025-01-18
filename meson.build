@@ -19,7 +19,7 @@ cc = meson.get_compiler('c')
 mumps_lib_d = cc.find_library('dmumps', required: false)
 mumps_lib_s = cc.find_library('smumps', required: false)
 mumps_lib_z = cc.find_library('zmumps', required: false)
-mumps_lib_x = cc.find_library('cmumps', required: false)
+mumps_lib_c = cc.find_library('cmumps', required: false)
 mumps_lib_common = cc.find_library('mumps_common', required: false)
 # message(zmumps.name())
 # message(zmumps.type_name())
@@ -33,7 +33,7 @@ cython_source_c = files('src/_cmumps.pyx')
 # 
 py.extension_module(
 '_dmumps', 
-cython_sources,
+cython_source_d,
 dependencies : [py_dep, mumps_lib_d, mumps_lib_common],
 install: true,
 subdir: 'pymumps',  # Folder relative to site-packages to install to
@@ -42,7 +42,7 @@ include_directories: ['src']
 
 py.extension_module(
 '_smumps', 
-cython_sources,
+cython_source_s,
 dependencies : [py_dep, mumps_lib_s, mumps_lib_common],
 install: true,
 subdir: 'pymumps',  # Folder relative to site-packages to install to
@@ -51,7 +51,7 @@ include_directories: ['src']
 
 py.extension_module(
 '_zmumps', 
-cython_sources,
+cython_source_z,
 dependencies : [py_dep, mumps_lib_z, mumps_lib_common],
 install: true,
 subdir: 'pymumps',  # Folder relative to site-packages to install to
@@ -60,7 +60,7 @@ include_directories: ['src']
 
 py.extension_module(
 '_cmumps', 
-cython_sources,
+cython_source_c,
 dependencies : [py_dep, mumps_lib_c, mumps_lib_common],
 install: true,
 subdir: 'pymumps',  # Folder relative to site-packages to install to
