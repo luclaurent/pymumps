@@ -1,14 +1,14 @@
 import warnings
-import mumps._dmumps
-import mumps._smumps
-import mumps._zmumps
-import mumps._cmumps
+# from . import _dmumps
+# from . import _smumps
+from . import _zmumps
+# from . import _cmumps
 
 __all__ = [
-    'DMumpsContext',
-    'SMumpsContext',
+    # 'DMumpsContext',
+    # 'SMumpsContext',
     'ZMumpsContext',
-    'CMumpsContext',
+    # 'CMumpsContext',
     'spsolve',
     ]
 

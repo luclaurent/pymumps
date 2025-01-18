@@ -88,8 +88,18 @@ cdef extern from "zmumps_c.h":
         ZMUMPS_COMPLEX *pivots
 
         ## RHS, solution, ouptput data and statistics ##
-        ZMUMPS_COMPLEX *rhs, *redrhs, *rhs_sparse, *sol_loc, *rhs_loc, *rhsintr
-        MUMPS_INT      *irhs_sparse, *irhs_ptr, *isol_loc, *irhs_loc, *glob2loc_rhs, *glob2loc_sol
+        ZMUMPS_COMPLEX *rhs
+        ZMUMPS_COMPLEX *redrhs
+        ZMUMPS_COMPLEX *rhs_sparse
+        ZMUMPS_COMPLEX *sol_loc
+        ZMUMPS_COMPLEX *rhs_loc
+        ZMUMPS_COMPLEX *rhsintr
+        MUMPS_INT      *irhs_sparse
+        MUMPS_INT      *irhs_ptr
+        MUMPS_INT      *isol_loc
+        MUMPS_INT      *irhs_loc
+        MUMPS_INT      *glob2loc_rhs
+        MUMPS_INT      *glob2loc_sol
         MUMPS_INT      nrhs, lrhs, lredrhs, nz_rhs, lsol_loc, nloc_rhs, lrhs_loc, nsol_loc
         MUMPS_INT      schur_mloc, schur_nloc, schur_lld
         MUMPS_INT      mblock, nblock, nprow, npcol
