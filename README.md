@@ -10,7 +10,19 @@ Requirements
 Getting Started
 ---------------
 
-Install using `python setup.py install` or run from the local checkout.
+<!-- Install using `python setup.py install` or run from the local checkout. -->
+Run `BASE_DATA_PYTHON=$(python -c "from sysconfig import get_paths;print(get_paths()['data'])")` to get the appropriate python path (considering the MUMPS has been installed in there).
+
+Run
+    
+    export LIBRARY_PATH=$BASE_DATA_PYTHON/lib
+    export C_INCLUDE_PATH=$BASE_DATA_PYTHON/include
+    pip install .
+
+Test the obtained installation using
+
+    python -c "import pymumps"
+
 
 Examples
 --------
