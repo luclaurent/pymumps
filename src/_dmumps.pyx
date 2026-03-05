@@ -110,6 +110,7 @@ cdef extern from "dmumps_c.h":
         MUMPS_INT      nblock
         MUMPS_INT      nprow
         MUMPS_INT      npcol
+        MUMPS_INT      ld_rhsintr
         MUMPS_INT      info[80]
         MUMPS_INT      infog[80]
         DMUMPS_REAL    rinfo[40]
