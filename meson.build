@@ -36,7 +36,7 @@ py.extension_module(
 cython_source_d,
 dependencies : [py_dep, mumps_lib_d, mumps_lib_common],
 install: true,
-subdir: 'pymumps',  # Folder relative to site-packages to install to
+subdir: 'mumps',  # Folder relative to site-packages to install to
 include_directories: ['src']
 )
 
@@ -45,7 +45,7 @@ py.extension_module(
 cython_source_s,
 dependencies : [py_dep, mumps_lib_s, mumps_lib_common],
 install: true,
-subdir: 'pymumps',  # Folder relative to site-packages to install to
+subdir: 'mumps',  # Folder relative to site-packages to install to
 include_directories: ['src']
 )
 
@@ -54,7 +54,7 @@ py.extension_module(
 cython_source_z,
 dependencies : [py_dep, mumps_lib_z, mumps_lib_common],
 install: true,
-subdir: 'pymumps',  # Folder relative to site-packages to install to
+subdir: 'mumps',  # Folder relative to site-packages to install to
 include_directories: ['src']
 )
 
@@ -63,7 +63,7 @@ py.extension_module(
 cython_source_c,
 dependencies : [py_dep, mumps_lib_c, mumps_lib_common],
 install: true,
-subdir: 'pymumps',  # Folder relative to site-packages to install to
+subdir: 'mumps',  # Folder relative to site-packages to install to
 include_directories: ['src']
 )
 
@@ -77,7 +77,7 @@ py.install_sources([
   ],
   pure: false,
   preserve_path: false,
-  subdir: 'pymumps'
+  subdir: 'mumps'
   )
 
 
