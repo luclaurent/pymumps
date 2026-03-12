@@ -1,250 +1,90 @@
-from unittest import TestCase
 import numpy as np
 import pytest
-# import sys
-try:
-    import mumps
-except ImportError:
-    pass
 
-reasonTxt = "Requires the PyMUMPS library"
+mumps = pytest.importorskip("mumps")
 
-# data test
+# test data
 dataIRN = [1, 2, 4, 5, 2, 1, 5, 3, 2, 3, 1, 3]
 dataJCN = [2, 3, 3, 5, 1, 1, 2, 4, 5, 2, 3, 3]
 dataVAL = [3.0, -3.0, 2.0, 1.0, 3.0, 2.0, 4.0, 2.0, 6.0, -1.0, 4.0, 1.0]
 dataRHS = [20.0, 24.0, 9.0, 6.0, 13.0]
 
-# @pytest.mark.skipif('mumps' not in sys.modules,
-#                     reason=reasonTxt)
+TEST_CASES = [
+    pytest.param("mumps._cmumps", mumps.CMumpsContext, np.complex64, id="complex64"),
+    pytest.param("mumps._zmumps", mumps.ZMumpsContext, np.complex128, id="complex128"),
+    pytest.param("mumps._dmumps", mumps.DMumpsContext, np.float64, id="real64"),
+    pytest.param("mumps._smumps", mumps.SMumpsContext, np.float32, id="real32"),
+]
 
 
-class TestMUMPS_complex64(TestCase):
-    def setUp(self):
-        pytest.importorskip('mumps._cmumps')
-        self.n = 5
-        self.irn = np.array(dataIRN, dtype=np.int32)
-        self.jcn = np.array(dataJCN, dtype=np.int32)
-        self.aval = np.array(dataVAL, dtype=np.complex64)
-        #
-        self.rhs = np.array(dataRHS, dtype=np.complex64)
-        #
-        self.ctx = mumps.CMumpsContext(par=1, sym=0)
-        self.ctx.set_silent()
+@pytest.fixture(params=TEST_CASES)
+def mumps_case(request):
+    module_name, context_cls, dtype = request.param
+    pytest.importorskip(module_name)
 
-    def test_init(self):
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
+    case = {
+        "n": 5,
+        "irn": np.array(dataIRN, dtype=np.int32),
+        "jcn": np.array(dataJCN, dtype=np.int32),
+        "aval": np.array(dataVAL, dtype=dtype),
+        "rhs": np.array(dataRHS, dtype=dtype),
+        "ctx": context_cls(par=1, sym=0),
+        "dtype": dtype,
+    }
+    case["ctx"].set_silent()
 
-    def test_rhs(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
+    yield case
 
-    def test_analyze(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=1)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_factorize(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=4)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_solve(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.run(job=6)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-        assert np.any(self.x == np.array([1., 2., 3., 4., 5.], dtype=complex))
-
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
+    if not getattr(case["ctx"], "destroyed", False):
+        case["ctx"].destroy()
 
 
-class TestMUMPS_complex128(TestCase):
-    def setUp(self):
-        pytest.importorskip('mumps._zmumps')
-        self.n = 5
-        self.irn = np.array(dataIRN, dtype=np.int32)
-        self.jcn = np.array(dataJCN, dtype=np.int32)
-        self.aval = np.array(dataVAL, dtype=np.complex128)
-        #
-        self.rhs = np.array(dataRHS, dtype=np.complex128)
-        #
-        self.ctx = mumps.ZMumpsContext(par=1, sym=0)
-        self.ctx.set_silent()
-
-    def test_init(self):
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_rhs(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_analyze(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=1)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_factorize(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=4)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_solve(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.run(job=6)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-        assert np.any(self.x == np.array([1., 2., 3., 4., 5.], dtype=complex))
-
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
+def test_init(mumps_case):
+    ctx = mumps_case["ctx"]
+    ctx.set_centralized_assembled(mumps_case["irn"], mumps_case["jcn"], mumps_case["aval"])
+    ctx.destroy()
+    assert ctx.destroyed
 
 
-class TestMUMPS_real64(TestCase):
-    def setUp(self):
-        pytest.importorskip('mumps._dmumps')
-        self.n = 5
-        self.irn = np.array(dataIRN, dtype=np.int32)
-        self.jcn = np.array(dataJCN, dtype=np.int32)
-        self.aval = np.array(dataVAL, dtype=np.float64)
-        #
-        self.rhs = np.array(dataRHS, dtype=np.float64)
-        #
-        self.ctx = mumps.DMumpsContext(par=1, sym=0)
-        self.ctx.set_silent()
-
-    def test_init(self):
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_rhs(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_analyze(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=1)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_factorize(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=4)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_solve(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.run(job=6)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-        assert np.any(self.x == np.array([1., 2., 3., 4., 5.], dtype=complex))
-
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
+def test_rhs(mumps_case):
+    ctx = mumps_case["ctx"]
+    ctx.set_shape(mumps_case["n"])
+    ctx.set_centralized_assembled(mumps_case["irn"], mumps_case["jcn"], mumps_case["aval"])
+    x = mumps_case["rhs"].copy()
+    ctx.set_rhs(x)
+    ctx.destroy()
+    assert ctx.destroyed
 
 
-class TestMUMPS_real32(TestCase):
-    def setUp(self):
-        pytest.importorskip('mumps._smumps')
-        self.n = 5
-        self.irn = np.array(dataIRN, dtype=np.int32)
-        self.jcn = np.array(dataJCN, dtype=np.int32)
-        self.aval = np.array(dataVAL, dtype=np.float32)
-        #
-        self.rhs = np.array(dataRHS, dtype=np.float32)
-        #
-        self.ctx = mumps.SMumpsContext(par=1, sym=0)
-        self.ctx.set_silent()
+def test_analyze(mumps_case):
+    ctx = mumps_case["ctx"]
+    ctx.set_shape(mumps_case["n"])
+    ctx.set_centralized_assembled(mumps_case["irn"], mumps_case["jcn"], mumps_case["aval"])
+    ctx.run(job=1)
+    assert ctx.id.infog[0] >= 0
+    ctx.destroy()
+    assert ctx.destroyed
 
-    def test_init(self):
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
 
-    def test_rhs(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.destroy()
-        assert self.ctx.destroyed
+def test_factorize(mumps_case):
+    ctx = mumps_case["ctx"]
+    ctx.set_shape(mumps_case["n"])
+    ctx.set_centralized_assembled(mumps_case["irn"], mumps_case["jcn"], mumps_case["aval"])
+    ctx.run(job=4)
+    assert ctx.id.infog[0] >= 0
+    ctx.destroy()
+    assert ctx.destroyed
 
-    def test_analyze(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=1)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
 
-    def test_factorize(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.ctx.run(job=4)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-
-    def test_solve(self):
-        self.ctx.set_shape(self.n)
-        self.ctx.set_centralized_assembled(self.irn, self.jcn, self.aval)
-        self.x = self.rhs.copy()
-        self.ctx.set_rhs(self.x)
-        self.ctx.run(job=6)
-        assert self.ctx.id.infog[0] >= 0
-        self.ctx.destroy()
-        assert self.ctx.destroyed
-        assert np.any(self.x == np.array([1., 2., 3., 4., 5.], dtype=complex))
+def test_solve(mumps_case):
+    ctx = mumps_case["ctx"]
+    ctx.set_shape(mumps_case["n"])
+    ctx.set_centralized_assembled(mumps_case["irn"], mumps_case["jcn"], mumps_case["aval"])
+    x = mumps_case["rhs"].copy()
+    ctx.set_rhs(x)
+    ctx.run(job=6)
+    assert ctx.id.infog[0] >= 0
+    ctx.destroy()
+    assert ctx.destroyed
+    expected = np.array([1., 2., 3., 4., 5.], dtype=mumps_case["dtype"])
+    assert np.allclose(x, expected)

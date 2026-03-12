@@ -103,40 +103,45 @@ message(VAR)
 # Generate Cython wrappers
 python3 = import('python')
 py = python3.find_installation(pure: false)
+run_command(py,
+['-c',
+'import generate_wrappers as gen; gen.clean_output_dir()'], 
+check: true)
+
 if mumps_lib_d.found()
 run_command(py,
-['import generate_wrappers.py', 
-'generate_wrappers(type_num = "d", version="' + MUMPS_VERSION + '")'], 
+['-c',
+'import generate_wrappers as gen; gen.generate_wrappers(type_num = "d", version=' + MUMPS_VERSION + ')'], 
 check: true)
 endif
 
 if mumps_lib_s.found()
 run_command(py,
-['import generate_wrappers.py', 
-'generate_wrappers(type_num = "s", version="' + MUMPS_VERSION + '")'], 
+['-c',
+'import generate_wrappers as gen; gen.generate_wrappers(type_num = "s", version=' + MUMPS_VERSION + ')'], 
 check: true)
 endif
 
 if mumps_lib_z.found()
 run_command(py,
-['import generate_wrappers.py', 
-'generate_wrappers(type_num = "z", version="' + MUMPS_VERSION + '")'], 
+['-c',
+'import generate_wrappers as gen; gen.generate_wrappers(type_num = "z", version=' + MUMPS_VERSION + ')'], 
 check: true)
 endif
 
 if mumps_lib_c.found()
 run_command(py,
-['import generate_wrappers.py', 
-'generate_wrappers(type_num = "c", version="' + MUMPS_VERSION + '")'], 
+['-c',
+'import generate_wrappers as gen; gen.generate_wrappers(type_num = "c", version=' + MUMPS_VERSION + ')'], 
 check: true)
 endif
 
 
 # Define the source files
-cython_source_d = files('src/_dmumps.pyx')
-cython_source_s = files('src/_smumps.pyx')
-cython_source_z = files('src/_zmumps.pyx')
-cython_source_c = files('src/_cmumps.pyx')
+cython_source_d = files('src/tmp_pyx/_dmumps.pyx')
+cython_source_s = files('src/tmp_pyx/_smumps.pyx')
+cython_source_z = files('src/tmp_pyx/_zmumps.pyx')
+cython_source_c = files('src/tmp_pyx/_cmumps.pyx')
 
 # 
 if mumps_lib_d.found()

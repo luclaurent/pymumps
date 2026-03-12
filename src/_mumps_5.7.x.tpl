@@ -39,7 +39,6 @@ cdef extern from "{x}mumps_c.h":
         MUMPS_INT      icntl[60]
         {X}MUMPS_REAL  cntl[15]
         MUMPS_INT      keep[500]
-        DMUMPS_REAL    cntl[15]
         DMUMPS_REAL    dkeep[230]
         MUMPS_INT8     keep8[150]
         MUMPS_INT      n
@@ -172,11 +171,9 @@ cdef class {X}MUMPS_STRUC_C:
     property job:
         def __get__(self): return self.ob.job
         def __set__(self, value): self.ob.job = value
-
     property comm_fortran:
         def __get__(self): return self.ob.comm_fortran
         def __set__(self, value): self.ob.comm_fortran = value
-
     property icntl:
         def __get__(self):
             cdef MUMPS_INT[:] view = self.ob.icntl
@@ -185,7 +182,6 @@ cdef class {X}MUMPS_STRUC_C:
         def __get__(self):
             cdef {X}MUMPS_REAL[:] view = self.ob.cntl
             return view
-
     property n:
         def __get__(self): return self.ob.n
         def __set__(self, value): self.ob.n = value
@@ -195,7 +191,6 @@ cdef class {X}MUMPS_STRUC_C:
     property nz_alloc:
         def __get__(self): return self.ob.nz_alloc
         def __set__(self, value): self.ob.nz_alloc = value
-
     property nz:
         def __get__(self): return self.ob.nz
         def __set__(self, value): self.ob.nz = value
@@ -208,7 +203,6 @@ cdef class {X}MUMPS_STRUC_C:
     property a:
         def __get__(self): return <uintptr_t> self.ob.a
         def __set__(self, value): self.ob.a = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
-
     property nz_loc:
         def __get__(self): return self.ob.nz_loc
         def __set__(self, value): self.ob.nz_loc = value
@@ -221,7 +215,6 @@ cdef class {X}MUMPS_STRUC_C:
     property a_loc:
         def __get__(self): return <uintptr_t> self.ob.a_loc
         def __set__(self, value): self.ob.a_loc = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
-
     property nelt:
         def __get__(self): return self.ob.nelt
         def __set__(self, value): self.ob.nelt = value
@@ -234,25 +227,21 @@ cdef class {X}MUMPS_STRUC_C:
     property a_elt:
         def __get__(self): return <uintptr_t> self.ob.a_elt
         def __set__(self, value): self.ob.a_elt = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
-
     property perm_in:
         def __get__(self): return <uintptr_t> self.ob.perm_in
         def __set__(self, value): self.ob.perm_in = <MUMPS_INT*> (<uintptr_t> value)
-
     property sym_perm:
         def __get__(self): return <uintptr_t> self.ob.sym_perm
         def __set__(self, value): self.ob.sym_perm = <MUMPS_INT*> (<uintptr_t> value)
     property uns_perm:
         def __get__(self): return <uintptr_t> self.ob.uns_perm
         def __set__(self, value): self.ob.uns_perm = <MUMPS_INT*> (<uintptr_t> value)
-
     property colsca:
         def __get__(self): return <uintptr_t> self.ob.colsca
         def __set__(self, value): self.ob.colsca = <{X}MUMPS_REAL*> (<uintptr_t> value)
     property rowsca:
         def __get__(self): return <uintptr_t> self.ob.rowsca
         def __set__(self, value): self.ob.rowsca = <{X}MUMPS_REAL*> (<uintptr_t> value)
-
     property rhs:
         def __get__(self): return <uintptr_t> self.ob.rhs
         def __set__(self, value): self.ob.rhs = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
@@ -265,12 +254,9 @@ cdef class {X}MUMPS_STRUC_C:
     property sol_loc:
         def __get__(self): return <uintptr_t> self.ob.sol_loc
         def __set__(self, value): self.ob.sol_loc = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
-
     property rhs_loc:
         def __get__(self): return <long> self.ob.rhs_loc
         def __set__(self, long value): self.ob.rhs_loc = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
-
-
     property irhs_sparse:
         def __get__(self): return <uintptr_t> self.ob.irhs_sparse
         def __set__(self, value): self.ob.irhs_sparse = <MUMPS_INT*> (<uintptr_t> value)
@@ -283,8 +269,6 @@ cdef class {X}MUMPS_STRUC_C:
     property irhs_loc:
         def __get__(self): return <long> self.ob.irhs_loc
         def __set__(self, long value): self.ob.irhs_loc = <MUMPS_INT*> (<uintptr_t> value)
-
-
     property nrhs:
         def __get__(self): return self.ob.nrhs
         def __set__(self, value): self.ob.nrhs = value
@@ -306,7 +290,6 @@ cdef class {X}MUMPS_STRUC_C:
     property lrhs_loc:
         def __get__(self): return self.ob.lrhs_loc
         def __set__(self, value): self.ob.lrhs_loc = value
-
     property schur_mloc:
         def __get__(self): return self.ob.schur_mloc
         def __set__(self, value): self.ob.schur_mloc = value
@@ -316,7 +299,6 @@ cdef class {X}MUMPS_STRUC_C:
     property schur_lld:
         def __get__(self): return self.ob.schur_lld
         def __set__(self, value): self.ob.schur_lld = value
-
     property mblock:
         def __get__(self): return self.ob.mblock
         def __set__(self, value): self.ob.mblock = value
@@ -329,7 +311,6 @@ cdef class {X}MUMPS_STRUC_C:
     property npcol:
         def __get__(self): return self.ob.npcol
         def __set__(self, value): self.ob.npcol = value
-
     property info:
         def __get__(self):
             cdef MUMPS_INT[:] view = self.ob.info
@@ -338,7 +319,6 @@ cdef class {X}MUMPS_STRUC_C:
         def __get__(self):
             cdef MUMPS_INT[:] view = self.ob.infog
             return view
-
     property rinfo:
         def __get__(self):
             cdef {X}MUMPS_REAL[:] view = self.ob.rinfo
@@ -347,7 +327,6 @@ cdef class {X}MUMPS_STRUC_C:
         def __get__(self):
             cdef {X}MUMPS_REAL[:] view = self.ob.rinfog
             return view
-
     property deficiency:
         def __get__(self): return self.ob.deficiency
         def __set__(self, value): self.ob.deficiency = value
@@ -357,7 +336,6 @@ cdef class {X}MUMPS_STRUC_C:
     property mapping:
         def __get__(self): return <uintptr_t> self.ob.mapping
         def __set__(self, value): self.ob.mapping = <MUMPS_INT*> (<uintptr_t> value)
-
     property size_schur:
         def __get__(self): return self.ob.size_schur
         def __set__(self, value): self.ob.size_schur = value
@@ -367,18 +345,15 @@ cdef class {X}MUMPS_STRUC_C:
     property schur:
         def __get__(self): return <uintptr_t> self.ob.schur
         def __set__(self, value): self.ob.schur = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
-
     property instance_number:
         def __get__(self): return self.ob.instance_number
         def __set__(self, value): self.ob.instance_number = value
     property wk_user:
         def __get__(self): return <uintptr_t> self.ob.wk_user
         def __set__(self, value): self.ob.wk_user = <{X}MUMPS_COMPLEX*> (<uintptr_t> value)
-
     property version_number:
         def __get__(self):
             return (<bytes> self.ob.version_number).decode('ascii')
-
     property ooc_tmpdir:
         def __get__(self):
             return (<bytes> self.ob.ooc_tmpdir).decode('ascii')
@@ -389,17 +364,14 @@ cdef class {X}MUMPS_STRUC_C:
             return (<bytes> self.ob.ooc_prefix).decode('ascii')
         def __set__(self, char *value):
             strncpy(self.ob.ooc_prefix, value, sizeof(self.ob.ooc_prefix))
-
     property write_problem:
         def __get__(self):
             return (<bytes> self.ob.write_problem).decode('ascii')
         def __set__(self, char *value):
             strncpy(self.ob.write_problem, value, sizeof(self.ob.write_problem))
-
     property lwk_user:
         def __get__(self): return self.ob.lwk_user
         def __set__(self, value): self.ob.lwk_user = value
-
 
     property save_dir:
         def __get__(self):
@@ -411,12 +383,10 @@ cdef class {X}MUMPS_STRUC_C:
             return (<bytes> self.ob.save_prefix).decode('ascii')
         def __set__(self, char *value):
             strncpy(self.ob.save_prefix, value, sizeof(self.ob.save_prefix))
-
     property metis_options:
         def __get__(self):
             cdef MUMPS_INT[:] view = self.ob.metis_options
             return view
-
 
 def {x}mumps_c({X}MUMPS_STRUC_C s not None):
     with nogil:

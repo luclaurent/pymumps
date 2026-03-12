@@ -102,3 +102,12 @@ ctx.run(job=3) # Solve
 # or analyses by supplying new values and running `job=2` to repeat
 # the factorization process.
 ```
+
+
+Dev
+--------
+
+Run meson to keep logs (`meson` and `ninja` could be installed using `pip install meson ninja`):
+
+    meson setup --reconfigure build
+    ninja -v -C build
