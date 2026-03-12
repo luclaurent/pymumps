@@ -107,7 +107,7 @@ ctx.run(job=3) # Solve
 Dev
 --------
 
-Run meson to keep logs (`meson` and `ninja` could be installed using `pip install meson ninja`):
+Run meson to keep logs (`meson`, `ninja` and `cython` could be installed using `pip install meson ninja cython`):
 
     meson setup --reconfigure build
     ninja -v -C build

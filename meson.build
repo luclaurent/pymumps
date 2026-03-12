@@ -137,15 +137,10 @@ check: true)
 endif
 
 
-# Define the source files
-cython_source_d = files('src/tmp_pyx/_dmumps.pyx')
-cython_source_s = files('src/tmp_pyx/_smumps.pyx')
-cython_source_z = files('src/tmp_pyx/_zmumps.pyx')
-cython_source_c = files('src/tmp_pyx/_cmumps.pyx')
-
 # 
 if mumps_lib_d.found()
   message('Add dmumps Python module')
+  cython_source_d = files('src/tmp_pyx/_dmumps.pyx')
   py.extension_module(
   '_dmumps', 
   cython_source_d,
@@ -156,8 +151,9 @@ if mumps_lib_d.found()
   )
 endif
 
-if mumps_lib_d.found()
-  message('Add dmumps Python module')
+if mumps_lib_s.found()
+  message('Add smumps Python module')
+  cython_source_s = files('src/tmp_pyx/_smumps.pyx')
   py.extension_module(
   '_smumps', 
   cython_source_s,
@@ -168,8 +164,9 @@ if mumps_lib_d.found()
   )
 endif
 
-if mumps_lib_d.found()
-  message('Add dmumps Python module')
+if mumps_lib_z.found()
+  message('Add zmumps Python module')
+  cython_source_z = files('src/tmp_pyx/_zmumps.pyx')
   py.extension_module(
   '_zmumps', 
   cython_source_z,
@@ -180,8 +177,9 @@ if mumps_lib_d.found()
   )
 endif
 
-if mumps_lib_d.found()
-  message('Add dmumps Python module')
+if mumps_lib_c.found()
+  message('Add cmumps Python module')
+  cython_source_c = files('src/tmp_pyx/_cmumps.pyx')
   py.extension_module(
   '_cmumps', 
   cython_source_c,

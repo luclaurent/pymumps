@@ -10,16 +10,16 @@ dataVAL = [3.0, -3.0, 2.0, 1.0, 3.0, 2.0, 4.0, 2.0, 6.0, -1.0, 4.0, 1.0]
 dataRHS = [20.0, 24.0, 9.0, 6.0, 13.0]
 
 TEST_CASES = [
-    pytest.param("mumps._cmumps", mumps.CMumpsContext, np.complex64, id="complex64"),
-    pytest.param("mumps._zmumps", mumps.ZMumpsContext, np.complex128, id="complex128"),
-    pytest.param("mumps._dmumps", mumps.DMumpsContext, np.float64, id="real64"),
-    pytest.param("mumps._smumps", mumps.SMumpsContext, np.float32, id="real32"),
+    ("mumps._cmumps", mumps.CMumpsContext, np.complex64, "complex64"),
+    ("mumps._zmumps", mumps.ZMumpsContext, np.complex128, "complex128"),
+    ("mumps._dmumps", mumps.DMumpsContext, np.float64, "real64"),
+    ("mumps._smumps", mumps.SMumpsContext, np.float32, "real32"),
 ]
 
 
 @pytest.fixture(params=TEST_CASES)
 def mumps_case(request):
-    module_name, context_cls, dtype = request.param
+    module_name, context_cls, dtype, idcase = request.param
     pytest.importorskip(module_name)
 
     case = {
@@ -33,7 +33,7 @@ def mumps_case(request):
     }
     case["ctx"].set_silent()
 
-    yield case
+    return case
 
     if not getattr(case["ctx"], "destroyed", False):
         case["ctx"].destroy()
