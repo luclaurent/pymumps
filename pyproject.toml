@@ -41,6 +41,7 @@ classifiers = [
 dependencies = [
     "numpy", 
     "scipy", 
+    "mpi4py",
 ]
 readme = "README.md"
 dynamic = ["version"]
@@ -71,7 +72,8 @@ dev = ["pylint ~=2.14.0", "toml ~=0.10.2", "yapf ~=0.32.0"]
 test = ["pytest", "pytest-cov[all]", "pytest-benchmark"]
 
 [tool.pytest.ini_options]
-addopts = "-n 10"
+addopts = "" 
+#"-n 10"
 testpaths = "src/tests"
 # addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 1"
 

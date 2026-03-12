@@ -4,7 +4,7 @@ PyMUMPS: A parallel sparse direct solver
 Requirements
 ------------
 
-* [MUMPS](http://graal.ens-lyon.fr/MUMPS/)
+* [MUMPS](https://mumps-solver.org/)
 * [mpi4py](https://code.google.com/p/mpi4py/)
 
 Getting Started
@@ -21,7 +21,7 @@ Run
 
 Test the obtained installation using
 
-    python -c "import pymumps"
+    python -c "import mumps"
 
 
 Examples
