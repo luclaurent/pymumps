@@ -1,0 +1,10 @@
+python setup.py config
+python setup.py build
+python setup.py install
+
+# possibly add: export MACOSX_DEPLOYMENT_TARGET=10.14
+#install openblas in anaconda if necessary (conda install openblas)
+
+pip install pymumps --global-option="build_ext" \
+    --global-option="-I$MUMPS_PREFIX/include" \
+    --global-option="-L$MUMPS_PREFIX/lib" \
