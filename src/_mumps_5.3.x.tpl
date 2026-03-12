@@ -36,7 +36,6 @@ cdef extern from "{x}mumps_c.h":
     ctypedef struct c_{X}MUMPS_STRUC_C "{X}MUMPS_STRUC_C":
         MUMPS_INT      sym, par, job
         MUMPS_INT      comm_fortran    # Fortran communicator
-        MUMPS_INT      icntl[40]
         {X}MUMPS_REAL  cntl[15]
         MUMPS_INT      icntl[60]
         MUMPS_INT      keep[500]
@@ -51,7 +50,6 @@ cdef extern from "{x}mumps_c.h":
         MUMPS_INT      nz_alloc
 
         # Assembled entry
-<<<<<<<< HEAD:src/_mumps.tpl
         MUMPS_INT        nz
         MUMPS_INT8       nnz
         MUMPS_INT        *irn
@@ -103,13 +101,10 @@ cdef extern from "{x}mumps_c.h":
         {X}MUMPS_COMPLEX *rhs_sparse
         {X}MUMPS_COMPLEX *sol_loc
         {X}MUMPS_COMPLEX *rhs_loc
-        {X}MUMPS_COMPLEX *rhsintr
         MUMPS_INT        *irhs_sparse
         MUMPS_INT        *irhs_ptr
         MUMPS_INT        *isol_loc
         MUMPS_INT        *irhs_loc
-        MUMPS_INT        *glob2loc_rhs
-        MUMPS_INT        *glob2loc_sol
         MUMPS_INT        nrhs
         MUMPS_INT        lrhs
         MUMPS_INT        lredrhs
@@ -117,7 +112,6 @@ cdef extern from "{x}mumps_c.h":
         MUMPS_INT        lsol_loc
         MUMPS_INT        nloc_rhs
         MUMPS_INT        lrhs_loc
-        MUMPS_INT        nsol_loc
         MUMPS_INT        schur_mloc
         MUMPS_INT        schur_nloc
         MUMPS_INT        schur_lld
@@ -125,7 +119,6 @@ cdef extern from "{x}mumps_c.h":
         MUMPS_INT        nblock
         MUMPS_INT        nprow
         MUMPS_INT        npcol
-        MUMPS_INT        ld_rhsintr
         MUMPS_INT        info[80]
         MUMPS_INT        infog[80]
         {X}MUMPS_REAL    rinfo[40]
@@ -135,7 +128,6 @@ cdef extern from "{x}mumps_c.h":
         MUMPS_INT      deficiency
         MUMPS_INT      *pivnul_list
         MUMPS_INT      *mapping
-        DMUMPS_REAL    *singular_values
 
         # Schur
         MUMPS_INT        size_schur

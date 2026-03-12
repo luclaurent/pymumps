@@ -100,6 +100,38 @@ message(VAR)
 # message(mumps_lib_z.partial_dependency(includes:true).found())
 
 
+# Generate Cython wrappers
+python3 = import('python')
+py = python3.find_installation(pure: false)
+if mumps_lib_d.found()
+run_command(py,
+['import generate_wrappers.py', 
+'generate_wrappers(type_num = "d", version="' + MUMPS_VERSION + '")'], 
+check: true)
+endif
+
+if mumps_lib_s.found()
+run_command(py,
+['import generate_wrappers.py', 
+'generate_wrappers(type_num = "s", version="' + MUMPS_VERSION + '")'], 
+check: true)
+endif
+
+if mumps_lib_z.found()
+run_command(py,
+['import generate_wrappers.py', 
+'generate_wrappers(type_num = "z", version="' + MUMPS_VERSION + '")'], 
+check: true)
+endif
+
+if mumps_lib_c.found()
+run_command(py,
+['import generate_wrappers.py', 
+'generate_wrappers(type_num = "c", version="' + MUMPS_VERSION + '")'], 
+check: true)
+endif
+
+
 # Define the source files
 cython_source_d = files('src/_dmumps.pyx')
 cython_source_s = files('src/_smumps.pyx')
