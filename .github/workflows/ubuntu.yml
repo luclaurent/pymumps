@@ -103,21 +103,24 @@ jobs:
         cmake --install build  
         #
         cd $cwd
-    - name: Build package
+    # - name: Build package
+    #   run: |
+    #     echo "Python data path: ${BASE_DATA_PYTHON}"
+    #     # set LD_LIBRARY_PATH to find the MUMPS libraries
+    #     export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
+    #     export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
+    #     # export
+
+    #     # update pip
+    #     python -m pip install --upgrade pip
+    #     pip install build
+    #     python -m build
+    - name: Install package
       run: |
-        echo "Python data path: ${BASE_DATA_PYTHON}"
         # set LD_LIBRARY_PATH to find the MUMPS libraries
         export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
         export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
-        export
-
-        # update pip
-        python -m pip install --upgrade pip
-        pip install build
-        python -m build
-    - name: Install package
-      run: |
-        pip install .
+        pip install .[test]
     - name: Run tests
       run: |
         python -m pytest
