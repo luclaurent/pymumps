@@ -174,12 +174,13 @@ jobs:
         # install MUMPS from source with not all number types to test the degraded behavior of the package when some MUMPS libraries are missing
         git clone https://github.com/scivision/mumps.git $TMP_FOLDER_MUMPS_SRC
         cd $TMP_FOLDER_MUMPS_SRC 
+         # build sequential version of MUMPS without double and complex16 to test the degraded behavior of the package when some MUMPS libraries are missing
         cmake -Bbuild \
           -DBUILD_SINGLE=on \ 
-          -DBUILD_DOUBLE=no \ # no double
+          -DBUILD_DOUBLE=no \
           -DBUILD_COMPLEX=on \
-          -DBUILD_COMPLEX16=no \ # no complex16
-          -DMUMPS_parallel=no \ # no parallel
+          -DBUILD_COMPLEX16=no \
+          -DMUMPS_parallel=no \
           -DBUILD_SHARED_LIBS=on  \
           -DMUMPS_UPSTREAM_VERSION=${{ matrix.mumps-version }} \
           --install-prefix=${BASE_DATA_PYTHON}
@@ -261,12 +262,13 @@ jobs:
         # install MUMPS from source with not all number types to test the degraded behavior of the package when some MUMPS libraries are missing
         git clone https://github.com/scivision/mumps.git $TMP_FOLDER_MUMPS_SRC
         cd $TMP_FOLDER_MUMPS_SRC 
+        # build parallel version of MUMPS with MPI support
         cmake -Bbuild \
           -DBUILD_SINGLE=on \
           -DBUILD_DOUBLE=on \
           -DBUILD_COMPLEX=on \
           -DBUILD_COMPLEX16=on \ 
-          -DMUMPS_parallel=on \ #  parallel
+          -DMUMPS_parallel=on \ 
           -DBUILD_SHARED_LIBS=on  \
           -DMUMPS_UPSTREAM_VERSION=${{ matrix.mumps-version }} \
           --install-prefix=${BASE_DATA_PYTHON}
