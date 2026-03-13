@@ -177,7 +177,7 @@ jobs:
         cd $TMP_FOLDER_MUMPS_SRC 
          # build sequential version of MUMPS without double and complex16 to test the degraded behavior of the package when some MUMPS libraries are missing
         cmake -Bbuild \
-          -DBUILD_SINGLE=on \ 
+          -DBUILD_SINGLE=on \
           -DBUILD_DOUBLE=no \
           -DBUILD_COMPLEX=on \
           -DBUILD_COMPLEX16=no \
