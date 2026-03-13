@@ -37,7 +37,8 @@ jobs:
         python -m build
     - name: Install package
       run: |
-        pip install --group=dev -e .
+        # pip install --group=dev -e .
+        pip install .
     - name: Run tests
       run: |
         python -m pytest
