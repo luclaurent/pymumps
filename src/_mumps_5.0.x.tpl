@@ -116,7 +116,7 @@ cdef extern from "{x}mumps_c.h":
         # For save/restore feature
         char           *save_dir
         char           *save_prefix
-]
+
         # Internal parameters
         MUMPS_INT        instance_number
         {X}MUMPS_COMPLEX *wk_user
