@@ -21,7 +21,7 @@ jobs:
           - '3.13'
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: setup-micromamba
         if: runner.os != 'Windows'
         uses: mamba-org/setup-micromamba@v2
@@ -47,12 +47,18 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash -el {0}
         run: |
-          python -m pip install -v --group=dev -Cbuild.verbose=true -Ccmake.define.MUMPS_ROOT=${CONDA_PREFIX} -e .
+          # python -m pip install -v --group=dev -Cbuild.verbose=true -Ccmake.define.MUMPS_ROOT=${CONDA_PREFIX} -e .
+          export LIBRARY_PATH=${CONDA_PREFIX}/lib
+          export C_INCLUDE_PATH=${CONDA_PREFIX}/include
+          python -m pip install -v .
       - name: install pymumps
         if: runner.os == 'Windows'
         shell: bash -el {0}
         run: |
-          python -m pip install -v --group=dev -Cbuild.verbose=true -Ccmake.define.MUMPS_ROOT=${CONDA_PREFIX}/Library -e .
+          # python -m pip install -v --group=dev -Cbuild.verbose=true -Ccmake.define.MUMPS_ROOT=${CONDA_PREFIX}/Library -e .
+          export LIBRARY_PATH=${CONDA_PREFIX}/lib
+          export C_INCLUDE_PATH=${CONDA_PREFIX}/include
+          python -m pip install -v .
       - name: Run pytest
         shell: bash -el {0}
         run: |
