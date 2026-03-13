@@ -102,7 +102,8 @@ dev = [
 test = [
 "pytest", 
 "pytest-cov[all]", 
-"pytest-benchmark"
+"pytest-benchmark",
+"scipy"
 ]
 
 [tool.pytest.ini_options]

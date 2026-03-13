@@ -40,7 +40,7 @@ class _MumpsBaseContext(object):
         assert abs(A.dot(x) - b).max() < 1e-10
     """
 
-    def __init__(self, par=1, sym=0, comm=None):
+    def __init__(self, par=1, sym=0, comm=None, del_warning=True):
         """Create a MUMPS solver context.
 
         Parameters
@@ -65,6 +65,8 @@ class _MumpsBaseContext(object):
         self.run(job = -1) # JOB_INIT
         self.myid = comm.rank
         self._refs = {} # References to matrices
+        #
+        self.del_warning = del_warning
 
     def __enter__(self):
         return self
@@ -253,7 +255,7 @@ class _MumpsBaseContext(object):
         self._refs = None
 
     def __del__(self):
-        if not self.destroyed:
+        if not self.destroyed and self.del_warning:
             warnings.warn("undestroyed %s" % self.__class__.__name__,
                           RuntimeWarning)
         self.destroy()
@@ -343,7 +345,7 @@ def spsolve(A, b, comm=None):
     else:
         raise ValueError('Unsupported data types.')
 
-    with context(par=1, sym=0, comm=comm) as ctx:
+    with context(par=1, sym=0, comm=comm, del_warning=True) as ctx:
         if ctx.myid == 0:
             # Set the sparse matrix -- only necessary on
             ctx.set_centralized_sparse(A.tocoo())
@@ -355,6 +357,7 @@ def spsolve(A, b, comm=None):
 
         # Analysis + Factorization + Solve
         ctx.run(job=6)
-
+        
+        # export only on rank/id 0, otherwise return None
         if ctx.myid == 0:
             return x
