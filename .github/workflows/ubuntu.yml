@@ -5,7 +5,6 @@ on:
     branches: 
       - master
       - main
-      - new_devel
   pull_request:
 
 permissions:
