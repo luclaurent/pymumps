@@ -231,8 +231,9 @@ jobs:
           libblas-dev \
           liblapack-dev \
           libopenmpi-dev \
-          openmpi-bin \ # add mpirun
+          openmpi-bin \ 
           openmpi-common
+          # add mpirun
         
     - uses: actions/checkout@main
     - name: Set up Python 3.13
