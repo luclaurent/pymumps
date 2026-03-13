@@ -103,6 +103,25 @@ ctx.run(job=3) # Solve
 # the factorization process.
 ```
 
+Use `spsolve` function
+
+```
+import numpy as np
+import scipy as sp
+import mumps
+# test data
+dataIRN = np.array([1, 2, 4, 5, 2, 1, 5, 3, 2, 3, 1, 3],dtype=np.int32)
+dataJCN = np.array([2, 3, 3, 5, 1, 1, 2, 4, 5, 2, 3, 3],dtype=np.int32)
+dataVAL = np.array([3.0, -3.0, 2.0, 1.0, 3.0, 2.0, 4.0, 2.0, 6.0, -1.0, 4.0, 1.0],dtype=np.float64)
+dataRHS = np.array([20.0, 24.0, 9.0, 6.0, 13.0],dtype=np.float64)
+dataSOL = np.array([1.0, 2.0, 3.0, 4.0, 5.0],dtype=np.float64)
+
+# build matrix
+A = mumps.sp.sparse.coo_matrix((dataVAL, (dataIRN - 1, dataJCN - 1)), 
+                        shape=(5,5))
+sol = spsolve(A, dataRHS)
+
+```
 
 Dev
 --------
