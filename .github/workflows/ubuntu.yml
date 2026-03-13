@@ -222,6 +222,7 @@ jobs:
       run: |              
         # install ubuntu package
         sudo apt-get update
+         # add mpirun
         sudo apt-get install -yy \
           build-essential \
           wget \
@@ -232,9 +233,9 @@ jobs:
           libblas-dev \
           liblapack-dev \
           libopenmpi-dev \
-          openmpi-bin \ 
-          openmpi-common
-          # add mpirun
+          openmpi-bin 
+
+         
         
     - uses: actions/checkout@main
     - name: Set up Python 3.13
@@ -267,8 +268,8 @@ jobs:
           -DBUILD_SINGLE=on \
           -DBUILD_DOUBLE=on \
           -DBUILD_COMPLEX=on \
-          -DBUILD_COMPLEX16=on \ 
-          -DMUMPS_parallel=on \ 
+          -DBUILD_COMPLEX16=on \
+          -DMUMPS_parallel=on \
           -DBUILD_SHARED_LIBS=on  \
           -DMUMPS_UPSTREAM_VERSION=${{ matrix.mumps-version }} \
           --install-prefix=${BASE_DATA_PYTHON}
