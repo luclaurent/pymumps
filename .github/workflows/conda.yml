@@ -47,7 +47,7 @@ jobs:
         shell: bash -el {0}
         run: |
           if [[ "${{ matrix.mumps }}" == "mumps-mpi" ]]; then
-            mpirun -n 2 python -m pytest -v -s --mpi
+            mpirun -n 2 pytest
           else
             python -m pytest
           fi
