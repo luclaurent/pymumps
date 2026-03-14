@@ -14,12 +14,12 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          # - macos-latest
+          - macos-latest
           # - windows-2022 #probably not available on Windows (https://anaconda.org/channels/conda-forge/packages/mumps-mpi/overview)
         python:
-          # - '3.10'
-          # - '3.11'
-          # - '3.12'
+          - '3.10'
+          - '3.11'
+          - '3.12'
           - '3.13'
         mumps:
           - mumps-mpi
