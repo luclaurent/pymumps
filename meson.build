@@ -45,7 +45,26 @@ mumps_lib_d = cc.find_library('dmumps',  has_headers:['dmumps_c.h'], required: f
 mumps_lib_s = cc.find_library('smumps',  has_headers:['smumps_c.h'], required: false)
 mumps_lib_z = cc.find_library('zmumps',  has_headers:['zmumps_c.h'], required: false)
 mumps_lib_c = cc.find_library('cmumps',  has_headers:['cmumps_c.h'], required: false)
-mumps_lib_common = cc.find_library('mumps_common', required: true)
+mumps_lib_common = cc.find_library('mumps_common', required: false)
+# for seq version (on conda)
+mumps_lib_d_seq = cc.find_library('dmumps_seq',  has_headers:['dmumps_c.h'], required: false)
+mumps_lib_s_seq = cc.find_library('smumps_seq',  has_headers:['smumps_c.h'], required: false)
+mumps_lib_z_seq = cc.find_library('zmumps_seq',  has_headers:['zmumps_c.h'], required: false)
+mumps_lib_c_seq = cc.find_library('cmumps_seq',  has_headers:['cmumps_c.h'], required: false)
+mumps_lib_common_seq = cc.find_library('mumps_common_seq', required: false)
+
+# if seq version found, use it instead of mpi version
+if mumps_lib_common_seq.found()
+mumps_lib_common = mumps_lib_common_seq
+mumps_lib_d = mumps_lib_d_seq
+mumps_lib_s = mumps_lib_s_seq
+mumps_lib_z = mumps_lib_z_seq
+mumps_lib_c = mumps_lib_c_seq
+endif
+
+if not mumps_lib_common.found()
+  error('Could not find MUMPS common library (mumps_common or mumps_common_seq). Please install MUMPS and ensure the libraries and headers are in the system path.')
+endif
 
 if not mumps_lib_d.found() and not mumps_lib_s.found() and not mumps_lib_z.found() and not mumps_lib_c.found()
   error('Could not find any MUMPS library (dmumps, smumps, zmumps, cmumps). Please install MUMPS and ensure the libraries and headers are in the system path.')
