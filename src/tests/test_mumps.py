@@ -121,3 +121,84 @@ def test_spsolve(mumps_case):
         assert np.allclose(sol, mumps_case["sol"])
     else:
         assert sol is None
+        
+def test_spsolve_sparse_rhs(mumps_case):
+    # destroy unused context
+    mumps_case["ctx"].destroy()
+    # build matrix
+    A = sp.sparse.coo_matrix((mumps_case["aval"], (mumps_case["irn"] - 1, mumps_case["jcn"] - 1)), 
+                             shape=(mumps_case["n"], mumps_case["n"]))
+    rhs_sparse = sp.sparse.coo_matrix(mumps_case["rhs"])
+    sol = mumps.spsolve(A, rhs_sparse)
+    if comm.rank == 0:
+        assert np.allclose(sol, mumps_case["sol"])
+    else:
+        assert sol is None
+        
+def test_factorize(mumps_case):
+    # destroy unused context
+    mumps_case["ctx"].destroy()
+    # factorize matrix
+    A = sp.sparse.coo_matrix((mumps_case["aval"], (mumps_case["irn"] - 1, mumps_case["jcn"] - 1)), 
+                             shape=(mumps_case["n"], mumps_case["n"]))
+    obj = mumps.factorize(A)
+    # repeat solve
+    sol = obj.solve(mumps_case["rhs"])
+    if comm.rank == 0:
+        assert np.allclose(sol, mumps_case["sol"])
+    else:
+        assert sol is None
+    solb = obj.solve(mumps_case["rhs"])
+    if comm.rank == 0:
+        assert np.allclose(solb, mumps_case["sol"])
+    else:
+        assert solb is None
+    # multiple RHS
+    rhs_multiple = np.tile(mumps_case["rhs"], (3, 1))
+    # multiples reference solutions
+    ref_sol_multiple = np.tile(mumps_case["sol"], (3, 1))
+    # solve multiple RHS
+    sol_multiple = obj.solve(rhs_multiple)
+    obj.destroy()
+    if comm.rank == 0:
+        assert np.allclose(sol_multiple, ref_sol_multiple)
+    else:
+        assert sol_multiple is None
+    
+def test_factorize_sparse(mumps_case):
+    # destroy unused context
+    mumps_case["ctx"].destroy()
+    # factorize matrix
+    A = sp.sparse.coo_matrix((mumps_case["aval"], (mumps_case["irn"] - 1, mumps_case["jcn"] - 1)), 
+                             shape=(mumps_case["n"], mumps_case["n"]))
+    obj = mumps.factorize(A)
+    rhs_sparse = sp.sparse.coo_matrix(mumps_case["rhs"])
+    # repeat solve
+    # sol = obj.solve(rhs_sparse)
+    # if comm.rank == 0:
+    #     assert np.allclose(sol, mumps_case["sol"])
+    # else:
+    #     assert sol is None
+    # solb = obj.solve(rhs_sparse)
+    # if comm.rank == 0:
+    #     assert np.allclose(solb, mumps_case["sol"])
+    # else:
+    #     assert solb is None
+        
+    # solc = obj.solve(mumps_case["rhs"]) # come back to non sprase format
+    # if comm.rank == 0:
+    #     assert np.allclose(solc, mumps_case["sol"])
+    # else:
+    #     assert solc is None
+    # multiple RHS
+    rhs_multiple = np.tile(mumps_case["rhs"], (3, 1))
+    rhs_multiple_sparse = sp.sparse.coo_matrix(rhs_multiple)
+    # multiples reference solutions
+    ref_sol_multiple = np.tile(mumps_case["sol"], (3, 1))
+    # solve multiple RHS
+    sol_multiple = obj.solve(rhs_multiple_sparse)
+    obj.destroy()
+    if comm.rank == 0:
+        assert np.allclose(sol_multiple, ref_sol_multiple)
+    else:
+        assert sol_multiple is None
