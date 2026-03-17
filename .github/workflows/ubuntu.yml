@@ -5,6 +5,7 @@ on:
     branches: 
       - master
       - main
+      - sparse
   pull_request:
 
 permissions:
