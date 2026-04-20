@@ -45,7 +45,7 @@ build-dir = "build"
 sdist.exclude = [".gitignore", ".gitattributes"]
 
 [tool.scikit-build.wheel]
-exclude = ["**.pyx"]
+exclude = ["**.pyx","**.tpl"]
 packages = ["mumps"]
 
 [tool.scikit-build.metadata.version]
