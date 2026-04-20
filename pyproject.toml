@@ -68,7 +68,7 @@ test = [
 [tool.pytest.ini_options]
 addopts = "" 
 #"-n 10"
-testpaths = "src/tests"
+testpaths = "tests"
 # addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 1"
 
 [tool.coverage.run]

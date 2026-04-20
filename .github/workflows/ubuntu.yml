@@ -120,9 +120,10 @@ jobs:
     - name: Install package
       run: |
         # set LD_LIBRARY_PATH to find the MUMPS libraries
-        export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
-        export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
-        pip install .[test]
+        # export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
+        # export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
+        # pip install .[test]
+        pip install -v -Ccmake.define.MUMPS_ROOT=${BASE_DATA_PYTHON}/ -e .
     - name: Run tests
       run: |
         python -m pytest
@@ -203,9 +204,10 @@ jobs:
     - name: Install package
       run: |
         # set LD_LIBRARY_PATH to find the MUMPS libraries
-        export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
-        export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
-        pip install .[test]
+        # export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
+        # export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
+        # pip install .[test]
+        pip install -v -Ccmake.define.MUMPS_ROOT=${BASE_DATA_PYTHON}/ -e .
     - name: Run tests
       run: |
         python -m pytest
@@ -291,9 +293,10 @@ jobs:
     - name: Install package
       run: |
         # set LD_LIBRARY_PATH to find the MUMPS libraries
-        export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
-        export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
-        pip install .[test]
+        # export LIBRARY_PATH=${BASE_DATA_PYTHON}/lib
+        # export C_INCLUDE_PATH=${BASE_DATA_PYTHON}/include
+        # pip install .[test]
+        pip install -v -Ccmake.define.MUMPS_ROOT=${BASE_DATA_PYTHON}/ -e .
     - name: Run tests
       run: |
         # run with only on 2 processes on GA
