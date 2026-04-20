@@ -1,5 +1,5 @@
 import numpy as np
-import mumps
+import 
 import pytest
 
 
@@ -28,7 +28,7 @@ def test_solve_s(matrix, rhs):
     b = b.astype("f")
 
     # Create the MUMPS context and set the array and right hand side
-    with mumps.SMumpsContext(sym=0, par=1) as ctx:
+    with srcbis.SMumpsContext(sym=0, par=1) as ctx:
         if ctx.myid == 0:
             ctx.set_shape(n)
             ctx.set_centralized_assembled(irn, jcn, a)
@@ -47,7 +47,7 @@ def test_solve_d(matrix, rhs):
     n, a, irn, jcn = matrix
 
     # Create the MUMPS context and set the array and right hand side
-    with mumps.DMumpsContext(sym=0, par=1) as ctx:
+    with srcbis.DMumpsContext(sym=0, par=1) as ctx:
         if ctx.myid == 0:
             ctx.set_shape(n)
             ctx.set_centralized_assembled(irn, jcn, a)
@@ -68,7 +68,7 @@ def test_solve_c(matrix, rhs):
     b = b.astype("F")
 
     # Create the MUMPS context and set the array and right hand side
-    with mumps.CMumpsContext(sym=0, par=1) as ctx:
+    with srcbis.CMumpsContext(sym=0, par=1) as ctx:
         if ctx.myid == 0:
             ctx.set_shape(n)
             ctx.set_centralized_assembled(irn, jcn, a)
@@ -88,7 +88,7 @@ def test_solve_z(matrix, rhs):
     a = a.astype("D")
 
     # Create the MUMPS context and set the array and right hand side
-    with mumps.ZMumpsContext(sym=0, par=1) as ctx:
+    with srcbis.ZMumpsContext(sym=0, par=1) as ctx:
         if ctx.myid == 0:
             ctx.set_shape(n)
             ctx.set_centralized_assembled(irn, jcn, a)
@@ -107,7 +107,7 @@ def test_spsolve_s(matrix, rhs):
     n, a, irn, jcn = matrix
     A = coo_array((a.astype('f'), (irn - 1, jcn - 1)), shape=(n,n))
     b = rhs.copy()
-    x = mumps.spsolve(A, b.astype('f'))
+    x = srcbis.spsolve(A, b.astype('f'))
 
     assert np.allclose(b, rhs)
     assert np.allclose(x, np.arange(1, 6))
@@ -118,7 +118,7 @@ def test_spsolve_d(matrix, rhs):
     n, a, irn, jcn = matrix
     A = coo_array((a, (irn - 1, jcn - 1)), shape=(n,n))
     b = rhs.copy()
-    x = mumps.spsolve(A, b)
+    x = srcbis.spsolve(A, b)
 
     assert np.allclose(b, rhs)
     assert np.allclose(x, np.arange(1, 6))
@@ -130,7 +130,7 @@ def test_spsolve_c(matrix, rhs):
     A = coo_array((a.astype('F'), (irn - 1, jcn - 1)), shape=(n,n))
     b = rhs + rhs * 2j
     b_copy = b.copy()
-    x = mumps.spsolve(A, b.astype('F'))
+    x = srcbis.spsolve(A, b.astype('F'))
 
     assert np.allclose(b, b_copy)
     assert np.allclose(x, np.arange(1, 6) + np.arange(1, 6) * 2j)
@@ -142,7 +142,7 @@ def test_spsolve_z(matrix, rhs):
     A = coo_array((a.astype('D'), (irn - 1, jcn - 1)), shape=(n,n))
     b = rhs + rhs * 2j
     b_copy = b.copy()
-    x = mumps.spsolve(A, b)
+    x = srcbis.spsolve(A, b)
 
     assert np.allclose(b, b_copy)
     assert np.allclose(x, np.arange(1, 6) + np.arange(1, 6) * 2j)

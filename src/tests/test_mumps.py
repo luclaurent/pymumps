@@ -49,9 +49,6 @@ def mumps_case(request):
 
     return case
 
-    if not getattr(case["ctx"], "destroyed", False):
-        case["ctx"].destroy()
-
 
 def test_init(mumps_case):
     ctx = mumps_case["ctx"]

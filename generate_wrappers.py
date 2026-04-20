@@ -1,53 +1,54 @@
+import argparse
 from pathlib import Path
 
-_BASE_DIR = Path(__file__).parent / 'src'
-_OUTPUT_DIR = _BASE_DIR /'tmp_pyx'
+BASE_DIR = Path(__file__).parent / 'mumps'
+OUTPUT_DIR = BASE_DIR
 
-def clean_output_dir(output_dir=_OUTPUT_DIR):
-    if output_dir.exists():
-        for f in output_dir.iterdir():
-            if f.is_file():
-                f.unlink()
+def select_template(version, src_dir=BASE_DIR):
+    """Select the appropriate template based on MUMPS version string."""
+    # Parse major.minor from version string (e.g. "5.7.3" -> 5, 7)
+    parts = version.split('.')
+    major = int(parts[0])
+    minor = int(parts[1]) if len(parts) > 1 else 0
+
+    if major < 5:
+        raise ValueError(f'Version {version} not supported, version should be >= 5.0.x')
+
+    if major > 5 or minor >= 7:
+        tpl_version = '5.7'
+    elif minor >= 3:
+        tpl_version = '5.3'
+    elif minor >= 1:
+        tpl_version = '5.1'
     else:
-        output_dir.mkdir()
+        tpl_version = '5.0'
 
-def generate_wrappers(type_num = ['s', 'd', 'c', 'z'], version="5.8.x", src_dir=_BASE_DIR, output_dir=_OUTPUT_DIR):
-    
+    tpl_file = src_dir / f'_mumps_{tpl_version}.x.tpl'
+    if not tpl_file.exists():
+        raise FileNotFoundError(f'Template file {tpl_file} not found')
 
-    if isinstance(type_num, str):
-        type_num = [type_num]
-        
-    # adapted version
-    new_version = ''
-    if int(version[0]) < 5:
-        raise ValueError('Version {} not supported, version should be 5.4.x, 5.5.x, 5.6.x, 5.7.x or 5.8.x'.format(version))
-    elif int(version[0]) > 5:
-        new_version = '5.7'
-        print('Warning: version {} not recognized, using version {}'.format(version, new_version))
-    #
-    if int(version[2]) == 2:
-        new_version = '5.1'
-        print('Warning: version {} requested, using version {}'.format(version, new_version))
-    elif int(version[2]) > 3 and int(version[2]) < 7:
-        new_version = '5.3'
-        print('Warning: version {} requested, using version {}'.format(version, new_version))
-    elif int(version[2]) > 7 :
-        new_version = '5.7'
-        print('Warning: version {} requested, using version {}'.format(version, new_version))
-    if new_version:
-        version = new_version
-    formatted_version  = version[:3] + '.x'
-    
-    
-    # template
-    _MUMPS_TEMPLATE = src_dir / ('_mumps_{}.tpl'.format(formatted_version))
+    print(f'Using template for MUMPS {tpl_version}.x (detected version: {version})')
+    return tpl_file
 
-    with open(_MUMPS_TEMPLATE, 'rt') as f:
+
+def generate_wrappers(version="5.7.0", src_dir=BASE_DIR, output_dir=OUTPUT_DIR):
+    """Generate Cython wrapper .pyx files for all MUMPS arithmetic types."""
+    tpl_file = select_template(version, src_dir)
+
+    with open(tpl_file, 'rt') as f:
         template = f.read()
 
-    for x in type_num:
-        with open(output_dir / f'_{x}mumps.pyx', 'wt') as f:
+    for x in ('s', 'd', 'c', 'z'):
+        out_path = output_dir / f'_{x}mumps.pyx'
+        with open(out_path, 'wt') as f:
             f.write(template.format(x=x, X=x.upper()))
-            
+        print(f'  Generated {out_path}')
+
+
 if __name__ == '__main__':
-    generate_wrappers()
+    parser = argparse.ArgumentParser(description='Generate MUMPS Cython wrappers')
+    parser.add_argument('--version', default='5.7.0',
+                        help='MUMPS version string (e.g. 5.7.3)')
+    args = parser.parse_args()
+    generate_wrappers(version=args.version)
+
