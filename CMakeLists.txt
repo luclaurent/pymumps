@@ -43,25 +43,14 @@ find_library(ZMUMPS_LIB
 )
 
 # Detect MUMPS version from header
-file(STRINGS "${MUMPS_INCLUDE_DIR}/smumps_c.h" _MUMPS_VERSION_LINES
-     REGEX "^#define MUMPS_VERSION[ \t]+\"[0-9]+\\.[0-9]+\\.[0-9]+\"")
-file(STRINGS "${MUMPS_INCLUDE_DIR}/dmumps_c.h" _MUMPS_VERSION_LINED
-     REGEX "^#define MUMPS_VERSION[ \t]+\"[0-9]+\\.[0-9]+\\.[0-9]+\"")
-file(STRINGS "${MUMPS_INCLUDE_DIR}/cmumps_c.h" _MUMPS_VERSION_LINEC
-     REGEX "^#define MUMPS_VERSION[ \t]+\"[0-9]+\\.[0-9]+\\.[0-9]+\"")
-file(STRINGS "${MUMPS_INCLUDE_DIR}/zmumps_c.h" _MUMPS_VERSION_LINEZ
-     REGEX "^#define MUMPS_VERSION[ \t]+\"[0-9]+\\.[0-9]+\\.[0-9]+\"")
-if(_MUMPS_VERSION_LINES)
-    set(_MUMPS_VERSION_LINE "${_MUMPS_VERSION_LINES}")
-elseif(_MUMPS_VERSION_LINED)
-    set(_MUMPS_VERSION_LINE "${_MUMPS_VERSION_LINED}")
-elseif(_MUMPS_VERSION_LINEC)
-    set(_MUMPS_VERSION_LINE "${_MUMPS_VERSION_LINEC}")
-elseif(_MUMPS_VERSION_LINEZ)
-    set(_MUMPS_VERSION_LINE "${_MUMPS_VERSION_LINEZ}")
-else()
-    set(_MUMPS_VERSION_LINE "")
-endif()
+set(_MUMPS_VERSION_LINE "")
+set(_HEADER_list smumps_c.h dmumps_c.h cmumps_c.h zmumps_c.h)
+foreach (_HEADER IN LISTS _HEADER_list)
+    if(NOT _MUMPS_VERSION_LINE)
+        file(STRINGS "${MUMPS_INCLUDE_DIR}/${_HEADER}" _MUMPS_VERSION_LINE
+             REGEX "^#define MUMPS_VERSION[ \t]+\"[0-9]+\\.[0-9]+\\.[0-9]+\"")
+    endif()
+endforeach()
 if(_MUMPS_VERSION_LINE)
     string(REGEX MATCH "\"([0-9]+\\.[0-9]+\\.[0-9]+)\"" _ "${_MUMPS_VERSION_LINE}")
     set(MUMPS_VERSION "${CMAKE_MATCH_1}")
