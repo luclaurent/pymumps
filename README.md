@@ -36,23 +36,6 @@ There is also conda recipe:
 conda install -c conda-forge pymumps
 ```
 
-Define `LIBRARY_PATH`/`LD_LIBRARY_PATH` 
-------------
- 
-You can define the two variables to give to the compiler the location of your MUMPS installation:
-
-    export LIBRARY_PATH=<...>/lib
-    export C_INCLUDE_PATH=<...>/include
-
-In the case of MUMPS installed in your Python's environment folders (`lib`/`include`), you can get the path using 
-
-    `BASE_DATA_PYTHON=$(python -c "from sysconfig import get_paths;print(get_paths()['data'])")`
-
-and export 
-    
-    export LIBRARY_PATH=$BASE_DATA_PYTHON/lib
-    export C_INCLUDE_PATH=$BASE_DATA_PYTHON/include
-
 
 Test if pyMUMPS is installed
 ------------
@@ -60,6 +43,10 @@ Test if pyMUMPS is installed
 Test the obtained installation using
 
     python -c "import mumps"
+
+or run tests using (`pytest`is required) after installing pymumps
+
+    pytest --pyargs mumps
 
 
 Examples
@@ -123,10 +110,3 @@ sol = spsolve(A, dataRHS)
 
 ```
 
-Dev
---------
-
-Run meson to keep logs (`meson`, `ninja` and `cython` could be installed using `pip install meson ninja cython`):
-
-    meson setup --reconfigure build
-    ninja -v -C build

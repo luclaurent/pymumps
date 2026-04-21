@@ -21,25 +21,25 @@ find_path(MUMPS_INCLUDE_DIR
 find_library(SMUMPS_LIB
     NAMES coinmumps smumps smumps_seq
     HINTS ${MUMPS_ROOT}/lib
-    # OPTIONAL
+    OPTIONAL
 )
 
 find_library(CMUMPS_LIB
     NAMES coinmumps cmumps cmumps_seq
     HINTS ${MUMPS_ROOT}/lib
-    # OPTIONAL
+    OPTIONAL
 )
 
 find_library(DMUMPS_LIB
     NAMES coinmumps dmumps dmumps_seq
     HINTS ${MUMPS_ROOT}/lib
-    # OPTIONAL
+    OPTIONAL
 )
 
 find_library(ZMUMPS_LIB
     NAMES zmumps zmumps_seq
     HINTS ${MUMPS_ROOT}/lib
-    # OPTIONAL
+    OPTIONAL
 )
 
 # Detect MUMPS version from header
