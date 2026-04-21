@@ -1,6 +1,7 @@
 import warnings
 import numpy as np
-
+import numpy.typing as npt
+import scipy as sp
 
 __all__ = [
     'DMumpsContext',
@@ -453,47 +454,87 @@ class factorize:
 
     This class is a simple wrapper around the MUMPS context which allows you to factorize a matrix once and then solve for multiple right hand sides.
     """
-    def __init__(self, A, comm=None):
-        if A.dtype == 'f':
+    def __init__(self, A: npt.NDArray|sp.sparse.spmatrix=None, comm=None, options: dict={'det': True}):
+        self.type = A.dtype
+        self.rhs: npt.NDArray|None = None
+        if self.type == 'f':
             context = SMumpsContext
             self.dtype = 'f'
-        elif A.dtype == 'F':
+        elif self.type == 'F':
             context = CMumpsContext
             self.dtype = 'F'
-        elif A.dtype == 'd':
+        elif self.type == 'd':
             context = DMumpsContext
             self.dtype = 'd'
-        elif A.dtype == 'D':
+        elif self.type == 'D':
             context = ZMumpsContext
             self.dtype = 'D'
         else:
             raise ValueError('Unsupported data types.')
         self.ctx = context(par=1, sym=0, comm=comm)
-        if self.ctx.myid == 0:
-            # Set the sparse matrix -- only necessary on
-            self.ctx.set_centralized_sparse(A.tocoo())
         self.ctx.set_silent()
-        self.ctx.run(job=4) # Analysis + Factorization
+        if options.get('det', False):
+            self.ctx.set_icntl(33, 1)  # computation of determinant required
+        if A is not None:
+            if self.ctx.myid == 0:
+                self.set_matrix(A)        
         
+        self.ctx.run(job=4) # Analysis + Factorization
+    
+    def __del__(self):
+        self.ctx.destroy()
     def __exit__(self, *exc_info):
         self.ctx.destroy()
-        
     def destroy(self):
         self.ctx.destroy()
         
-    def solve(self, b):
+    def set_matrix(self, matrix: npt.NDArray|sp.sparse.spmatrix)-> None:
+        if isinstance(matrix, sp.sparse.spmatrix):
+            self.ctx.set_centralized_sparse(matrix.tocoo()) 
+        else:
+            self.irn, self.jcn = np.indices(matrix.shape, dtype=np.int32)
+            self.irn = self.irn.ravel() + 1
+            self.jcn = self.jcn.ravel() + 1
+            self.ctx.set_shape(matrix.shape[0]) 
+            matrix_ravel = matrix.ravel()
+            self.ctx.set_centralized_assembled(self.irn,
+                                              self.jcn,
+                                              matrix_ravel)
+    
+    @property
+    def det(self)-> complex|float|None:
+        if self.ctx.myid == 0:
+            if self.ctx.get_icntl(33) == 0:
+                warnings.warn("Determinant was not computed. Please set icntl(33)=1 to compute the determinant.")
+                return None
+            # get determinant infos
+            a = self.ctx.get_rinfog(12)
+            b = self.ctx.get_rinfog(13)
+            c = self.ctx.get_infog(34)
+            if b > 0:
+                return (a + 1j*b)*2**c
+            else:
+                return a*2**c
+        else:
+            return None
+        
+    def set_rhs(self, rhs: npt.NDArray|sp.sparse.spmatrix=None)-> None:
+        if rhs.__class__.__module__.startswith('scipy.sparse'):
+                self.rhs = self.ctx.set_rhs_centralized_sparse(rhs)
+        else:
+            self.rhs = rhs.copy()
+            self.ctx.set_rhs(self.rhs)
+
+        
+    def solve(self, b: npt.NDArray|sp.sparse.spmatrix=None)-> npt.NDArray|None:
         """Solve for the given right hand side."""
         # check b
         assert b.dtype == self.dtype
         if self.ctx.myid == 0:
-            if b.__class__.__module__.startswith('scipy.sparse'):
-                x = self.ctx.set_rhs_centralized_sparse(b)
-            else:
-                x = b.copy()
-                self.ctx.set_rhs(x)
+            self.set_rhs(b)
         self.ctx.run(job=3) # Solve
         if self.ctx.myid == 0:
-            return x
+            return self.rhs
         else:
             return None
 
