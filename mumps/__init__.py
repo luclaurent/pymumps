@@ -487,9 +487,11 @@ class factorize:
     def __exit__(self, *exc_info):
         self.ctx.destroy()
     def destroy(self):
+        """Destroy the MUMPS context and free resources."""
         self.ctx.destroy()
         
     def set_matrix(self, matrix: npt.NDArray|sp.sparse.spmatrix)-> None:
+        """ Set the matrix to be factorized. This should only be called on the rank 0 process. """
         if isinstance(matrix, sp.sparse.spmatrix):
             self.ctx.set_centralized_sparse(matrix.tocoo()) 
         else:
@@ -504,6 +506,7 @@ class factorize:
     
     @property
     def det(self)-> complex|float|None:
+        """ Compute the determinant of the matrix. This requires that icntl(33) be set to 1 before factorization. If the determinant was not computed, a warning is issued and None is returned."""
         if self.ctx.myid == 0:
             if self.ctx.get_icntl(33) == 0:
                 warnings.warn("Determinant was not computed. Please set icntl(33)=1 to compute the determinant.")
@@ -520,6 +523,7 @@ class factorize:
             return None
         
     def set_rhs(self, rhs: npt.NDArray|sp.sparse.spmatrix=None)-> None:
+        """ Set the right hand side. This matrix will be modified in place. """
         if rhs.__class__.__module__.startswith('scipy.sparse'):
                 self.rhs = self.ctx.set_rhs_centralized_sparse(rhs)
         else:
