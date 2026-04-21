@@ -9,6 +9,7 @@ __all__ = [
     'ZMumpsContext',
     'CMumpsContext',
     'spsolve',
+    'factorize',
     '__version__',
     ]
 
