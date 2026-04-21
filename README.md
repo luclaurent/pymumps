@@ -92,21 +92,74 @@ ctx.run(job=3) # Solve
 
 Use `spsolve` function
 
-```
+```python
 import numpy as np
-import scipy as sp
+import scipy.sparse as sp
 import mumps
+
 # test data
-dataIRN = np.array([1, 2, 4, 5, 2, 1, 5, 3, 2, 3, 1, 3],dtype=np.int32)
-dataJCN = np.array([2, 3, 3, 5, 1, 1, 2, 4, 5, 2, 3, 3],dtype=np.int32)
-dataVAL = np.array([3.0, -3.0, 2.0, 1.0, 3.0, 2.0, 4.0, 2.0, 6.0, -1.0, 4.0, 1.0],dtype=np.float64)
-dataRHS = np.array([20.0, 24.0, 9.0, 6.0, 13.0],dtype=np.float64)
-dataSOL = np.array([1.0, 2.0, 3.0, 4.0, 5.0],dtype=np.float64)
+dataIRN = np.array([1, 2, 4, 5, 2, 1, 5, 3, 2, 3, 1, 3], dtype=np.int32)
+dataJCN = np.array([2, 3, 3, 5, 1, 1, 2, 4, 5, 2, 3, 3], dtype=np.int32)
+dataVAL = np.array([3.0, -3.0, 2.0, 1.0, 3.0, 2.0, 4.0, 2.0, 6.0, -1.0, 4.0, 1.0], dtype=np.float64)
+dataRHS = np.array([20.0, 24.0, 9.0, 6.0, 13.0], dtype=np.float64)
 
-# build matrix
-A = mumps.sp.sparse.coo_matrix((dataVAL, (dataIRN - 1, dataJCN - 1)), 
-                        shape=(5,5))
-sol = spsolve(A, dataRHS)
+# build sparse matrix
+A = sp.coo_matrix((dataVAL, (dataIRN - 1, dataJCN - 1)), shape=(5, 5))
 
+sol = mumps.spsolve(A, dataRHS)
+```
+
+Use `factorize` to solve multiple right-hand sides efficiently
+
+```python
+import numpy as np
+import scipy.sparse as sp
+import mumps
+
+# test data
+dataIRN = np.array([1, 2, 4, 5, 2, 1, 5, 3, 2, 3, 1, 3], dtype=np.int32)
+dataJCN = np.array([2, 3, 3, 5, 1, 1, 2, 4, 5, 2, 3, 3], dtype=np.int32)
+dataVAL = np.array([3.0, -3.0, 2.0, 1.0, 3.0, 2.0, 4.0, 2.0, 6.0, -1.0, 4.0, 1.0], dtype=np.float64)
+
+# build sparse matrix
+A = sp.coo_matrix((dataVAL, (dataIRN - 1, dataJCN - 1)), shape=(5, 5))
+
+# factorize once (determinant computation enabled by default)
+obj = mumps.factorize(A)
+
+# solve for the first right-hand side
+rhs1 = np.array([20.0, 24.0, 9.0, 6.0, 13.0], dtype=np.float64)
+sol1 = obj.solve(rhs1)  # [1., 2., 3., 4., 5.] on rank 0, None elsewhere
+
+# reuse the same factorization for a second right-hand side
+rhs2 = np.array([4.0, 7.0, 0.0, 4.0, 9.0], dtype=np.float64)
+sol2 = obj.solve(rhs2)
+
+# solve for multiple right-hand sides at once
+rhs_multi = np.stack([rhs1, rhs2])        # shape (2, 5)
+sol_multi  = obj.solve(rhs_multi)         # shape (2, 5) on rank 0
+
+obj.destroy()
+```
+
+Compute the determinant of a sparse matrix
+
+```python
+import numpy as np
+import scipy.sparse as sp
+import mumps
+
+# build sparse matrix
+dataIRN = np.array([1, 2, 4, 5, 2, 1, 5, 3, 2, 3, 1, 3], dtype=np.int32)
+dataJCN = np.array([2, 3, 3, 5, 1, 1, 2, 4, 5, 2, 3, 3], dtype=np.int32)
+dataVAL = np.array([3.0, -3.0, 2.0, 1.0, 3.0, 2.0, 4.0, 2.0, 6.0, -1.0, 4.0, 1.0], dtype=np.float64)
+A = sp.coo_matrix((dataVAL, (dataIRN - 1, dataJCN - 1)), shape=(5, 5))
+
+# factorize with determinant computation enabled (default: True)
+obj = mumps.factorize(A, options={"det": True})
+
+# retrieve the determinant (available on rank 0, None on other ranks)
+det = obj.det   # 228.0
+obj.destroy()
 ```
 
