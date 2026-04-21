@@ -6,7 +6,6 @@ on:
       - master
       - main
       - sparse
-      - refactor-to-cmake
   pull_request:
 
 permissions:
