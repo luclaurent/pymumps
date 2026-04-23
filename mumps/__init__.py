@@ -31,15 +31,17 @@ class _MumpsBaseContext(object):
 
     Basic usage generally involves setting up the context, adding
     the sparse matrix and right hand side in process 0, and using
-    `run` to execute the various MUMPS phases.
+    ``run`` to execute the various MUMPS phases.
+
+    ::
 
         ctx = MumpsContext()
         if rank == 0:
             ctx.set_centralized_sparse(A)
-            x = b.copy() # MUMPS modifies rhs in place, so make copy
+            x = b.copy()  # MUMPS modifies rhs in place, so make copy
             ctx.set_rhs(x)
-        ctx.run(6) # Symbolic + Numeric + Solve
-        ctx.destroy() # Free internal data structures
+        ctx.run(6)  # Symbolic + Numeric + Solve
+        ctx.destroy()  # Free internal data structures
 
         assert abs(A.dot(x) - b).max() < 1e-10
     """
