@@ -14,7 +14,9 @@ def select_template(version, src_dir=BASE_DIR):
     if major < 5:
         raise ValueError(f'Version {version} not supported, version should be >= 5.0.x')
 
-    if major > 5 or minor >= 7:
+    if major > 5 or minor >= 9:
+        tpl_version = '5.9'
+    elif minor >= 7:
         tpl_version = '5.7'
     elif minor >= 3:
         tpl_version = '5.3'
